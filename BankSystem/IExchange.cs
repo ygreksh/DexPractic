@@ -2,6 +2,6 @@
 {
     public interface IExchange<T> where T: Currency
     {
-        T CurrencyExchange(T currencyFrom, T currencyTo);
+        double CurrencyExchange(double sumfrom, T currencyFrom, T currencyTo);
     }
 }
