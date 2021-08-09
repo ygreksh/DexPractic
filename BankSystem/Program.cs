@@ -7,8 +7,7 @@ namespace BankSystem
     {
         public static void Main(string[] args)
         {
-            
-                //список клиентов
+            //список клиентов
                 List<Client> listOfClients = new List<Client>();
                 listOfClients.Add(new Client(){Name = "Abrikosov", PassportNumber = "a-11111111"});
                 listOfClients.Add(new Client(){Name = "Bulochkin", PassportNumber = "b-22222222"});
@@ -25,12 +24,19 @@ namespace BankSystem
                 listOfEmployee.Add(new Employee(){Name = "Dubov", PassportNumber = "DU-00000000"});
             
                 //поиск клиента из списка клиентов
-                Person foundClient = Bank.FindPersonByPassportnmber("g-44444444", listOfClients);
+                Person foundClient = BankSystem.FindPersonByPassportNumber("g-44444444", listOfClients);
                 Console.WriteLine(foundClient.ToString());
             
                 //поиск сотрудника из списка сотрудников тем же методом
-                Person foundEmployee = Bank.FindPersonByPassportnmber("BU-77777777", listOfEmployee);
+                Person foundEmployee = BankSystem.FindPersonByPassportNumber("BU-77777777", listOfEmployee);
                 Console.WriteLine(foundEmployee.ToString());
+
+                //Проверка обмена валюты  из класса Exchange
+                var dollar = new Dollar() {CurrencyName = "Dollar", rate = 1.00};
+                var ruble = new Ruble() { CurrencyName = "Ruble", rate = 77.00 };
+                double someMoneyDollars = 10.00;
+                double someMoneyRuble = new Exchange<Currency>().CurrencyExchange(someMoneyDollars, dollar, ruble);
+                Console.WriteLine(@"в долларах {0}, в рублях {1}", someMoneyDollars, someMoneyRuble);
         }
     }
 }
