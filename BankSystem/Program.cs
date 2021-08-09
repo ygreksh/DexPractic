@@ -7,6 +7,7 @@ namespace BankSystem
     {
         public static void Main(string[] args)
         {
+            /*
             //список клиентов
                 List<Client> listOfClients = new List<Client>();
                 listOfClients.Add(new Client(){Name = "Abrikosov", PassportNumber = "a-11111111"});
@@ -37,6 +38,48 @@ namespace BankSystem
                 double someMoneyDollars = 10.00;
                 double someMoneyRuble = new Exchange<Currency>().CurrencyExchange(someMoneyDollars, dollar, ruble);
                 Console.WriteLine(@"в долларах {0}, в рублях {1}", someMoneyDollars, someMoneyRuble);
+                */
+            Dictionary<Client, List<Account>> dictOfClients = new Dictionary<Client, List<Account>>();
+            dictOfClients.Add(new Client(){Name = "Bulochkin", PassportNumber = "a-11111111"}, 
+                                new List<Account>()     //содержимое списка счетов
+                                {
+                                    new Account(){currency = new Dollar(){CurrencyName = "Dollar",rate = 1}, value = 100},   //100 долларов
+                                    new Account(){currency = new Ruble(){CurrencyName = "Ruble", rate = 77}, value = 1000},  //1000 рублей
+                                    new Account(){currency = new Leu(){CurrencyName = "Leu", rate = 12}, value = 200}        //200 лей
+                                });
+            dictOfClients.Add(new Client(){Name = "Abrikosov", PassportNumber = "b-22222222"}, 
+                new List<Account>()     //содержимое списка счетов
+                {
+                    new Account(){currency = new Dollar(){CurrencyName = "Dollar",rate = 1}, value = 50},   //50 долларов
+                    new Account(){currency = new Ruble(){CurrencyName = "Ruble", rate = 77}, value = 500},  //500 рублей
+                    new Account(){currency = new Leu(){CurrencyName = "Leu", rate = 12}, value = 100}       //000 лей
+                });
+
+            //тестовые счета
+            Account account1 = new Account() 
+                { currency = new Dollar() { CurrencyName = "Dollar", rate = 1 }, value = 20 };   //20 долларов
+            Account account2 = new Account() 
+                { currency = new Ruble() { CurrencyName = "Ruble", rate = 77 }, value = 20 };    //50 рублей
+            Console.WriteLine("Было");
+            Console.WriteLine($"{account1.value} {account1.currency}");
+            Console.WriteLine($"{account2.value} {account2.currency}");
+            
+            //перевода денег между счетами
+            BankSystem banksystem = new BankSystem();
+            //var tranferHandler = new BankSystem().Transfer;
+            //banksystem.DelegateTransfer(MyTransferMoney);
+            banksystem.TransferMoney(10,account1,account2, MyTransferMoney);
+
+            Console.WriteLine("Стало");
+            Console.WriteLine($"{account1.value} {account1.currency}");
+            Console.WriteLine($"{account2.value} {account2.currency}");
+
+        }
+
+        public static void MyTransferMoney(double Sum, Account fromAccount, Account toAccount)
+        {
+            fromAccount.value -= Sum;
+            toAccount.value += new Exchange<Currency>().CurrencyExchange(Sum, fromAccount.currency, toAccount.currency);
         }
     }
 }
