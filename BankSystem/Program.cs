@@ -64,11 +64,10 @@ namespace BankSystem
             Console.WriteLine($"{account1.value} {account1.currency}");
             Console.WriteLine($"{account2.value} {account2.currency}");
             
-            //перевода денег между счетами
+            //тест перевода денег между счетами
             BankSystem banksystem = new BankSystem();
-            //var tranferHandler = new BankSystem().Transfer;
-            //banksystem.DelegateTransfer(MyTransferMoney);
-            banksystem.TransferMoney(10,account1,account2, MyTransferMoney);
+            //переводит 20 долларов на рублевый счет
+            banksystem.TransferMoney(20,account1,account2, MyTransferMoney);
 
             Console.WriteLine("Стало");
             Console.WriteLine($"{account1.value} {account1.currency}");
