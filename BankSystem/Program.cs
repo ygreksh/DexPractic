@@ -75,6 +75,15 @@ namespace BankSystem
             Console.WriteLine($"{account1.value} {account1.currency}");
             Console.WriteLine($"{account2.value} {account2.currency}");
 
+            foreach (var item in dictOfClients)
+            {
+                Console.WriteLine($"{item.Key}");
+                foreach (var account in item.Value)
+                {
+                    Console.WriteLine($"{account.currency} - {account.value}");
+                }
+            }
+
         }
 
         public static void MyTransferMoney(double Sum, Account fromAccount, Account toAccount)

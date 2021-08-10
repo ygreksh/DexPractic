@@ -43,6 +43,7 @@
         <Compile Include="Model\Currency.cs" />
         <Compile Include="Model\Dollar.cs" />
         <Compile Include="Model\Employee.cs" />
+        <Compile Include="Model\Hryvnia.cs" />
         <Compile Include="Model\Leu.cs" />
         <Compile Include="Model\Person.cs" />
         <Compile Include="Model\Ruble.cs" />
