@@ -39,6 +39,7 @@ namespace BankSystem
                 double someMoneyRuble = new Exchange<Currency>().CurrencyExchange(someMoneyDollars, dollar, ruble);
                 Console.WriteLine(@"в долларах {0}, в рублях {1}", someMoneyDollars, someMoneyRuble);
                 */
+            //Словарь клиентов
             Dictionary<Client, List<Account>> dictOfClients = new Dictionary<Client, List<Account>>();
             dictOfClients.Add(new Client(){Name = "Bulochkin", PassportNumber = "a-11111111"}, 
                                 new List<Account>()     //содержимое списка счетов
@@ -55,6 +56,7 @@ namespace BankSystem
                     new Account(){currency = new Leu(){CurrencyName = "Leu", rate = 12}, value = 100}       //000 лей
                 });
 
+            
             //тестовые счета
             Account account1 = new Account() 
                 { currency = new Dollar() { CurrencyName = "Dollar", rate = 1 }, value = 20 };   //20 долларов
@@ -80,5 +82,6 @@ namespace BankSystem
             fromAccount.value -= Sum;
             toAccount.value += new Exchange<Currency>().CurrencyExchange(Sum, fromAccount.currency, toAccount.currency);
         }
+        
     }
 }
