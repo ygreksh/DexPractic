@@ -22,32 +22,22 @@ namespace BankSystem
             if (dictOfClients.ContainsKey(client) == false)
             {
                 dictOfClients.Add(client, new List<Account>(){account});
-                
             }
             //если искомый уже клиент есть, добавляется ещё один Accaunt в listOfAccounts
             else
             {
                 List<Account> listOfAccounts;
                 dictOfClients.TryGetValue(client, out listOfAccounts);
-                listOfAccounts.Add(account);
                 Client foundclient = (Client)FindPersonByPassportNumber<Client>(client.PassportNumber, dictOfClients.Keys.ToList());
                 listOfAccounts.Add(account);
+                dictOfClients.Remove(foundclient);
                 dictOfClients.Add(foundclient, listOfAccounts);
-    
             }
-            
-            /*
-            foreach (var item in dictOfClients)
-            {
-                if (item.Key == foundclient)
-                    item.Value = listOfAccounts;
-            }
-            */
         }
-
-        public void TransferMoney(double Sum, Account fromAccount, Account toAccount, Transfer transfermoney)
+        //Переод денег между счетами
+        public void TransferMoney(double Sum, Account donorAccount, Account recipientAccount, Transfer transfermoney)
         {
-            transfermoney.Invoke(Sum, fromAccount, toAccount);
+            transfermoney.Invoke(Sum, donorAccount, recipientAccount);
         }
     }
 }
