@@ -20,7 +20,7 @@ namespace BankSystem
             PassportNumber = passportNumber;
         }
 
-        public Person()
+        Person()
         {
             throw new NotImplementedException();
         }

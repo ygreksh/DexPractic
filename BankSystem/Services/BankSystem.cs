@@ -10,9 +10,10 @@ namespace BankSystem
         public delegate void Transfer(double sum, Account fromAccount, Account toAccount);
         
         //обобщенный метод. работает только с экземплярами и наследниками Person
-        public static Person FindPersonByPassportNumber<T>(string PassportNumber, List<T> listOfPersons) where T: Person    
+        public static Person FindPersonByPassportNumber<T>(string PassportNumber, List<T> listOfPersons) where T: Person
         {
-            return listOfPersons.Find(x => x.Equals(new Person() {PassportNumber = PassportNumber}));
+            Person person = new Person("", 30,PassportNumber);
+            return listOfPersons.Find(x => x.Equals(person));
         }
         
         //ДОбавление нового счета Account пользователю в словаре
