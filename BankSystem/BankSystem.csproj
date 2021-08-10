@@ -38,6 +38,8 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Exceptions\NotEnoughMoneyException.cs" />
+        <Compile Include="Exceptions\WrongAgeException.cs" />
         <Compile Include="Model\Account.cs" />
         <Compile Include="Model\Client.cs" />
         <Compile Include="Model\Currency.cs" />

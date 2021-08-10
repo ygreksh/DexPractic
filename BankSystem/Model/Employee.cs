@@ -12,5 +12,9 @@
         {
             return base.Equals(obj);
         }
+
+        public Employee(string name, int age, string passportNumber) : base(name, age, passportNumber)
+        {
+        }
     }
 }

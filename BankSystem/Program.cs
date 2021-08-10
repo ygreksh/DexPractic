@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using BankSystem.Exceptions;
 
 namespace BankSystem
 {
@@ -98,11 +99,20 @@ namespace BankSystem
                 }
             }
 
-            Client client1 = new Client() { Name = "Abrikosov", PassportNumber = "a-11111111" };    //Такой клиент уже есть
-            Client client2 = new Client() { Name = "Yablokov", PassportNumber = "y-12121212" };     //Новый клиент
+            try
+            {
+                Client client1 = new Client() { Name = "Abrikosov", PassportNumber = "a-11111111" };    //Такой клиент уже есть
+                Client client2 = new Client() { Name = "Yablokov", PassportNumber = "y-12121212" };     //Новый клиент
             
-            BankSystem.AddClientAccount(account3, client1, dictOfClients);  //Добавили счет с гривнами для Абрикосова
-            BankSystem.AddClientAccount(account3, client2, dictOfClients);  //Добавили Яблокова с единственным счетом в гривнах
+                BankSystem.AddClientAccount(account3, client1, dictOfClients);  //Добавили счет с гривнами для Абрикосова
+                BankSystem.AddClientAccount(account3, client2, dictOfClients);  //Добавили Яблокова с единственным счетом в гривнах
+
+            }
+            catch (WrongAgeException e)
+            {
+                Console.WriteLine($"Ошибка: {e.Message}");
+            }
+            
             //Словарь клентов после добавления нового счета Hryvnia
             Console.WriteLine("Клиенты после добавления нового счета:");
             foreach (var item in dictOfClients)
@@ -119,16 +129,42 @@ namespace BankSystem
         //Мой метод перевода денег между счетами без комиссии
         public static void MyTransferMoney(double Sum, Account donorAccount, Account recipientAccount)
         {
-            donorAccount.value -= Sum;
-            recipientAccount.value += new Exchange<Currency>().CurrencyExchange(Sum, donorAccount.currency, recipientAccount.currency);
+            try
+            {
+                if (donorAccount.value - Sum < 0)
+                {
+                    throw new NotEnoughMoneyException("Недостаточно денег на счету!");
+                }
+
+                donorAccount.value -= Sum;
+                recipientAccount.value +=
+                    new Exchange<Currency>().CurrencyExchange(Sum, donorAccount.currency, recipientAccount.currency);
+            }
+            catch (NotEnoughMoneyException e)
+            {
+                Console.WriteLine($"Ошибка: {e.Message}");
+            }
         }
         //Мой метод перевода денег между счетами с комиссией
         public static void MyTransferMoneyWithTax(double Sum, Account donorAccount, Account recipientAccount)
         {
-            donorAccount.value -= Sum;
-            recipientAccount.value += new Exchange<Currency>().CurrencyExchange(Sum, donorAccount.currency, recipientAccount.currency);
-            //Комиссия 1 доллар снимается со счета донора
-            donorAccount.value -= new Exchange<Currency>().CurrencyExchange(1, new Dollar(){CurrencyName = "Dollar", rate = 1}, donorAccount.currency);
+            try
+            {
+                double tax = 1;
+                donorAccount.value -= Sum;
+                recipientAccount.value += new Exchange<Currency>().CurrencyExchange(Sum, donorAccount.currency, recipientAccount.currency);
+                //Комиссия tax = 1 доллар снимается со счета донора
+                donorAccount.value -= new Exchange<Currency>().CurrencyExchange(tax, new Dollar(){CurrencyName = "Dollar", rate = 1}, donorAccount.currency);
+                if (donorAccount.value < 0)
+                {
+                    throw new NotEnoughMoneyException("Недостаточно денег на счету");
+                }
+            }
+            catch (NotEnoughMoneyException e)
+            {
+                Console.WriteLine($"Ошибка: {e.Message}");
+                throw;
+            }
         }
     }
 }

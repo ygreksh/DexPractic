@@ -1,12 +1,29 @@
 ﻿using System;
+using BankSystem.Exceptions;
 
 namespace BankSystem
 {
     public class Person
     {
         public string Name { get; set; }
-        public DateTime BirthDate { get; set; }
+        public int Age { get; set; }
         public string PassportNumber { get; set; }
+
+        public Person(string name, int age, string passportNumber)
+        {
+            if (age < 18)
+            {
+                throw new WrongAgeException("Неправильный возраст!");
+            }
+            Name = name;
+            Age = age;
+            PassportNumber = passportNumber;
+        }
+
+        public Person()
+        {
+            throw new NotImplementedException();
+        }
 
         public override int GetHashCode()
         {
