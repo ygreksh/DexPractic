@@ -48,7 +48,7 @@ namespace BankSystem
             Console.WriteLine($"{account1.value} {account1.currency}");
             Console.WriteLine($"{account2.value} {account2.currency}");
             //перевод денег со счета на счет с комиссией
-            bankService.TransferMoneyWithTax(5, account1, account2, transferMoney);
+            bankService.TransferMoneyWithTax(11, account1, account2, transferMoney);
             Console.WriteLine("Стало");
             Console.WriteLine($"{account1.value} {account1.currency}");
             Console.WriteLine($"{account2.value} {account2.currency}");

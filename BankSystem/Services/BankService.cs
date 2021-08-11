@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BankSystem.Exceptions;
 
 namespace BankSystem
 {
@@ -46,18 +47,47 @@ namespace BankSystem
         //Переод денег между счетами без комиссии
         public void TransferMoney(double Sum, Account donorAccount, Account recipientAccount, Func<double, Currency, Currency, double> transfermoney)
         {
-            donorAccount.value -= Sum;
-            recipientAccount.value += transfermoney.Invoke(Sum, donorAccount.currency, recipientAccount.currency);
+            try
+            {
+                if (Sum > donorAccount.value)
+                {
+                    throw new NotEnoughMoneyException("Недостаточно денег на счету!");
+                }
+                else
+                {
+                    donorAccount.value -= Sum;
+                    recipientAccount.value += transfermoney.Invoke(Sum, donorAccount.currency, recipientAccount.currency);
+                }
+            }
+            catch (NotEnoughMoneyException e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
         //Переод денег между счетами с комиссией
         public void TransferMoneyWithTax(double Sum, Account donorAccount, Account recipientAccount, Func<double, Currency, Currency, double> transfermoney)
         {
             double tax = 1; //размер комиссии
             Dollar dollar = new Dollar() { CurrencyName = "Dollar", rate = 1 }; //валюта комиссии 
-            donorAccount.value -= Sum;
-            recipientAccount.value += transfermoney.Invoke(Sum, donorAccount.currency, recipientAccount.currency);
-            //снимается комиссия со счета-донора
-            donorAccount.value -= transfermoney.Invoke(tax, dollar, donorAccount.currency);
+            try
+            {
+                if ((Sum + transfermoney.Invoke(tax, dollar, donorAccount.currency))  > donorAccount.value )
+                {
+                    throw new NotEnoughMoneyException("Недостаточно денег на счету!");
+                }
+                else
+                {
+                    donorAccount.value -= Sum;
+                    recipientAccount.value += transfermoney.Invoke(Sum, donorAccount.currency, recipientAccount.currency);
+                    //снимается комиссия со счета-донора
+                    donorAccount.value -= transfermoney.Invoke(tax, dollar, donorAccount.currency);
+                }
+                
+            }
+            catch (NotEnoughMoneyException e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
     }
 }
