@@ -63,8 +63,6 @@ namespace BankSystem
                 }
             }
 
-            try
-            {
                 Client client1 = new Client("Abrikosov", 22, "a-11111111");    //Такой клиент уже есть
                 Client client2 = new Client("Yablokov", 33, "y-12121212");     //Новый клиент
                 Client client3 = new Client("Kartoshkin", 13,"k-13131313");     //Новый клиент вызовет исключение WrongAgeException
@@ -73,11 +71,7 @@ namespace BankSystem
                 BankService.AddClientAccount(account3, client2, dictOfClients);  //Добавили Яблокова с единственным счетом в гривнах
                 BankService.AddClientAccount(account3, client3, dictOfClients);  //Добавили Картошкина который дожен вызвать исключение
 
-            }
-            catch (WrongAgeException e)
-            {
-                Console.WriteLine($"Ошибка: {e.Message}");
-            }
+            
             
             //Словарь клентов после добавления нового счета Hryvnia
             Console.WriteLine("Клиенты после добавления нового счета:");

@@ -11,13 +11,19 @@ namespace BankSystem
 
         public Person(string name, int age, string passportNumber)
         {
+            /*
             if (age < 18)
             {
                 throw new WrongAgeException("Неправильный возраст!");
             }
-            Name = name;
-            Age = age;
-            PassportNumber = passportNumber;
+            else
+            */
+            {
+                Name = name;
+                Age = age;
+                PassportNumber = passportNumber;    
+            }
+            
         }
 
         Person()
