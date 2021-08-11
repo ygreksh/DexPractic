@@ -38,24 +38,20 @@ namespace BankSystem
             Console.WriteLine($"{account2.value} {account2.currency}");
             
             //тест перевода денег между счетами
-            BankSystem banksystem = new BankSystem();
-            //переводит 10 долларов на рублевый счет без комиссии
-            banksystem.TransferMoney(10,account1,account2, MyTransferMoney);
-            Console.WriteLine("Стало без комисии -10 долларов +770 рублей");
+            BankService bankService = new BankService();
+            //Устанавливаем через делегат способ обмена валюты
+            BankService.Transfer transferMoney = new  Exchange<Currency>().CurrencyExchange;    
+            bankService.RegisterTransfer(transferMoney);
+            //собственно сам перевод денег со счета на счет  без комиссии
+            bankService.TransferMoney(10, account1, account2, transferMoney);
+            Console.WriteLine("Стало");
             Console.WriteLine($"{account1.value} {account1.currency}");
             Console.WriteLine($"{account2.value} {account2.currency}");
-            //переводит 5 долларов на рублевый счет с комиссиеё
-            banksystem.TransferMoney(5,account1,account2, MyTransferMoneyWithTax);
-            Console.WriteLine("Стало -5 долларов +385 и -1 доллар комиссии");
+            //перевод денег со счета на счет с комиссией
+            bankService.TransferMoneyWithTax(5, account1, account2, transferMoney);
+            Console.WriteLine("Стало");
             Console.WriteLine($"{account1.value} {account1.currency}");
             Console.WriteLine($"{account2.value} {account2.currency}");
-            //переводит 77 рублей счет на долларовый счет с комиссиеё
-            banksystem.TransferMoney(77,account2,account1, MyTransferMoneyWithTax);
-
-            Console.WriteLine("Стало в итоге -77 рублей +1 доллар и -77 рублей комиссии");
-            Console.WriteLine($"{account1.value} {account1.currency}");
-            Console.WriteLine($"{account2.value} {account2.currency}");
-
             //Словарь клентов до добавления нового счета Hryvnia
             Console.WriteLine("Клиенты до добавления нового счета:");
             foreach (var item in dictOfClients)
@@ -73,9 +69,9 @@ namespace BankSystem
                 Client client2 = new Client("Yablokov", 33, "y-12121212");     //Новый клиент
                 Client client3 = new Client("Kartoshkin", 13,"k-13131313");     //Новый клиент вызовет исключение WrongAgeException
             
-                BankSystem.AddClientAccount(account3, client1, dictOfClients);  //Добавили счет с гривнами для Абрикосова
-                BankSystem.AddClientAccount(account3, client2, dictOfClients);  //Добавили Яблокова с единственным счетом в гривнах
-                BankSystem.AddClientAccount(account3, client3, dictOfClients);  //Добавили Картошкина который дожен вызвать исключение
+                BankService.AddClientAccount(account3, client1, dictOfClients);  //Добавили счет с гривнами для Абрикосова
+                BankService.AddClientAccount(account3, client2, dictOfClients);  //Добавили Яблокова с единственным счетом в гривнах
+                BankService.AddClientAccount(account3, client3, dictOfClients);  //Добавили Картошкина который дожен вызвать исключение
 
             }
             catch (WrongAgeException e)
@@ -96,46 +92,6 @@ namespace BankSystem
 
         }
         
-        //Мой метод перевода денег между счетами без комиссии
-        public static void MyTransferMoney(double Sum, Account donorAccount, Account recipientAccount)
-        {
-            try
-            {
-                if (donorAccount.value - Sum < 0)
-                {
-                    throw new NotEnoughMoneyException("Недостаточно денег на счету!");
-                }
-
-                donorAccount.value -= Sum;
-                recipientAccount.value +=
-                    new Exchange<Currency>().CurrencyExchange(Sum, donorAccount.currency, recipientAccount.currency);
-            }
-            catch (NotEnoughMoneyException e)
-            {
-                Console.WriteLine($"Ошибка: {e.Message}");
-            }
-        }
-        //Мой метод перевода денег между счетами с комиссией
-        public static void MyTransferMoneyWithTax(double Sum, Account donorAccount, Account recipientAccount)
-        {
-            try
-            {
-                double tax = 1;         //комиссия за перевод
-                Dollar dollar = new Dollar() { CurrencyName = "Dollar", rate = 1 }; //эквивалент валюты снимаемой в качестве комиссии за перевод
-                donorAccount.value -= Sum;
-                recipientAccount.value += new Exchange<Currency>().CurrencyExchange(Sum, donorAccount.currency, recipientAccount.currency);
-                //Комиссия tax = 1 доллар снимается со счета донора
-                donorAccount.value -= new Exchange<Currency>().CurrencyExchange(tax, dollar, donorAccount.currency);
-                if (donorAccount.value < 0)
-                {
-                    throw new NotEnoughMoneyException("Недостаточно денег на счету");
-                }
-            }
-            catch (NotEnoughMoneyException e)
-            {
-                Console.WriteLine($"Ошибка: {e.Message}");
-                throw;
-            }
-        }
+        
     }
 }

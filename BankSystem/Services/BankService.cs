@@ -4,11 +4,19 @@ using System.Linq;
 
 namespace BankSystem
 {
-    public class BankSystem
+    public class BankService
     {
         //Делегат
-        public delegate void Transfer(double sum, Account fromAccount, Account toAccount);
+        public delegate double Transfer(double sum, Currency fromCurrency, Currency toCurrency);
+        Transfer _transfer;
+
+        public void RegisterTransfer(Transfer transfer)
+        {
+            _transfer = transfer;
+        }
+        //public Func<double, Currency, Currency, double> Transfer = new Exchange<Currency>().CurrencyExchange;
         
+
         //обобщенный метод. работает только с экземплярами и наследниками Person
         public static Person FindPersonByPassportNumber<T>(string PassportNumber, List<T> listOfPersons) where T: Person
         {
@@ -35,10 +43,21 @@ namespace BankSystem
                 dictOfClients.Add(foundclient, listOfAccounts);
             }
         }
-        //Переод денег между счетами
+        //Переод денег между счетами без комиссии
         public void TransferMoney(double Sum, Account donorAccount, Account recipientAccount, Transfer transfermoney)
         {
-            transfermoney.Invoke(Sum, donorAccount, recipientAccount);
+            donorAccount.value -= Sum;
+            recipientAccount.value += transfermoney.Invoke(Sum, donorAccount.currency, recipientAccount.currency);
+        }
+        //Переод денег между счетами с комиссией
+        public void TransferMoneyWithTax(double Sum, Account donorAccount, Account recipientAccount, Transfer transfermoney)
+        {
+            double tax = 1; //размер комиссии
+            Dollar dollar = new Dollar() { CurrencyName = "Dollar", rate = 1 }; //валюта комиссии 
+            donorAccount.value -= Sum;
+            recipientAccount.value += transfermoney.Invoke(Sum, donorAccount.currency, recipientAccount.currency);
+            //снимается комиссия со счета-донора
+            donorAccount.value -= transfermoney.Invoke(tax, dollar, donorAccount.currency);
         }
     }
 }

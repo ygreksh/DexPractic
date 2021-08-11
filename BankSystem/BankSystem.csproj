@@ -51,7 +51,7 @@
         <Compile Include="Model\Ruble.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="Services\BankSystem.cs" />
+        <Compile Include="Services\BankService.cs" />
         <Compile Include="Services\Exchange.cs" />
         <Compile Include="Services\IExchange.cs" />
     </ItemGroup>
