@@ -24,13 +24,29 @@ namespace BankSystem.Tests
         public void TransferMoney_Dollar5_to_Dollar_10_Eq_Dollar15()
         {
             //Arrange
-            Account donorAccount = new Account() { currency = new Dollar() { currencyName = "USD" }, value = 5 };
-            Account recipientAccount = new Account() { currency = new Dollar() { currencyName = "USD" }, value = 10 };
-            //Func<double, Currency, Currency, double> transfermoney = (sum, fromAccount, toAccount) => {fromAccount.};
+            Account donorAccount = new Account() { currency = new Dollar() { currencyName = "USD", rate = 1}, value = 5 };
+            Account recipientAccount = new Account() { currency = new Dollar() { currencyName = "USD", rate = 1}, value = 10 };
+            Func<double, Currency, Currency, double> transfermoney = new  Exchange<Currency>().CurrencyExchange;
             BankService bankService = new BankService();
             //Act
-            //bankService.TransferMoney(5,donorAccount,recipientAccount,Func<double, Currency, Currency, double> transfermoney);
+            bankService.TransferMoney(5,donorAccount,recipientAccount, transfermoney);
             //Assert
+            Assert.Equal(donorAccount.value,0);
+            Assert.Equal(recipientAccount.value,15);
+        }
+        [Fact]
+        public void TransferMoney_Dollar1_to_Ruble_10_Eq_Ruble87()
+        {
+            //Arrange
+            Account donorAccount = new Account() { currency = new Dollar() { currencyName = "USD", rate = 1}, value = 10 };
+            Account recipientAccount = new Account() { currency = new Ruble() { currencyName = "RUB", rate = 77}, value = 10 };
+            Func<double, Currency, Currency, double> transfermoney = new  Exchange<Currency>().CurrencyExchange;
+            BankService bankService = new BankService();
+            //Act
+            bankService.TransferMoney(1,donorAccount,recipientAccount, transfermoney);
+            //Assert
+            Assert.Equal(donorAccount.value,9);
+            Assert.Equal(recipientAccount.value,87);
         }
     }
 }
