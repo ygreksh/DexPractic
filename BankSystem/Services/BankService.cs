@@ -7,14 +7,14 @@ namespace BankSystem
     public class BankService
     {
         //Делегат
-        public delegate double Transfer(double sum, Currency fromCurrency, Currency toCurrency);
-        Transfer _transfer;
+        //public delegate double Transfer(double sum, Currency fromCurrency, Currency toCurrency);
+        //Func
+        public Func<double, Currency, Currency, double> _transfer;
 
-        public void RegisterTransfer(Transfer transfer)
+        public void RegisterTransfer(Func<double, Currency, Currency, double> transfer)
         {
             _transfer = transfer;
         }
-        //public Func<double, Currency, Currency, double> Transfer = new Exchange<Currency>().CurrencyExchange;
         
 
         //обобщенный метод. работает только с экземплярами и наследниками Person
@@ -44,13 +44,13 @@ namespace BankSystem
             }
         }
         //Переод денег между счетами без комиссии
-        public void TransferMoney(double Sum, Account donorAccount, Account recipientAccount, Transfer transfermoney)
+        public void TransferMoney(double Sum, Account donorAccount, Account recipientAccount, Func<double, Currency, Currency, double> transfermoney)
         {
             donorAccount.value -= Sum;
             recipientAccount.value += transfermoney.Invoke(Sum, donorAccount.currency, recipientAccount.currency);
         }
         //Переод денег между счетами с комиссией
-        public void TransferMoneyWithTax(double Sum, Account donorAccount, Account recipientAccount, Transfer transfermoney)
+        public void TransferMoneyWithTax(double Sum, Account donorAccount, Account recipientAccount, Func<double, Currency, Currency, double> transfermoney)
         {
             double tax = 1; //размер комиссии
             Dollar dollar = new Dollar() { CurrencyName = "Dollar", rate = 1 }; //валюта комиссии 

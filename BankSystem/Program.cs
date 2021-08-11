@@ -40,7 +40,7 @@ namespace BankSystem
             //тест перевода денег между счетами
             BankService bankService = new BankService();
             //Устанавливаем через делегат способ обмена валюты
-            BankService.Transfer transferMoney = new  Exchange<Currency>().CurrencyExchange;    
+            Func<double, Currency, Currency, double> transferMoney = new  Exchange<Currency>().CurrencyExchange;    
             bankService.RegisterTransfer(transferMoney);
             //собственно сам перевод денег со счета на счет  без комиссии
             bankService.TransferMoney(10, account1, account2, transferMoney);
