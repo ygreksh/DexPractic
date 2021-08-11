@@ -120,11 +120,12 @@ namespace BankSystem
         {
             try
             {
-                double tax = 1;
+                double tax = 1;         //комиссия за перевод
+                Dollar dollar = new Dollar() { CurrencyName = "Dollar", rate = 1 }; //эквивалент валюты снимаемой в качестве комиссии за перевод
                 donorAccount.value -= Sum;
                 recipientAccount.value += new Exchange<Currency>().CurrencyExchange(Sum, donorAccount.currency, recipientAccount.currency);
                 //Комиссия tax = 1 доллар снимается со счета донора
-                donorAccount.value -= new Exchange<Currency>().CurrencyExchange(tax, new Dollar(){CurrencyName = "Dollar", rate = 1}, donorAccount.currency);
+                donorAccount.value -= new Exchange<Currency>().CurrencyExchange(tax, dollar, donorAccount.currency);
                 if (donorAccount.value < 0)
                 {
                     throw new NotEnoughMoneyException("Недостаточно денег на счету");
