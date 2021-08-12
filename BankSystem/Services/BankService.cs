@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using BankSystem.Exceptions;
 
@@ -12,6 +13,7 @@ namespace BankSystem
         //Func
         public Func<double, Currency, Currency, double> _transfer;
 
+        public static Dictionary<Client, List<Account>> dictOfClients = new Dictionary<Client, List<Account>>();
         public void RegisterTransfer(Func<double, Currency, Currency, double> transfer)
         {
             _transfer = transfer;
@@ -23,6 +25,25 @@ namespace BankSystem
         {
             Person person = new Person("", 30,PassportNumber);
             return listOfPersons.Find(x => x.Equals(person));
+        }
+        
+        public void AddPerson(string name, int age, string passportnumber)
+        {
+            if (age < 18)
+            {
+                throw new WrongAgeException("Возраст меньше 18 лет");
+            }
+            else
+            {
+                Client client = new Client(name, age, passportnumber);
+                dictOfClients.Add(client, new List<Account>());
+                /*
+                using (FileStream fs = new FileStream())
+                {
+                    
+                }
+                */
+            }
         }
         
         //ДОбавление нового счета Account пользователю в словаре

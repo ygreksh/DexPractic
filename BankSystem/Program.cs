@@ -33,25 +33,7 @@ namespace BankSystem
                 { currency = new Ruble() { CurrencyName = "Ruble", rate = 77 }, value = 20 };    //50 рублей
             Account account3 = new Account()
                 { currency = new Hryvnia() { CurrencyName = "Hryvnia", rate = 27 }, value = 27 };    //27 гривен
-            Console.WriteLine("Было");
-            Console.WriteLine($"{account1.value} {account1.currency}");
-            Console.WriteLine($"{account2.value} {account2.currency}");
             
-            //тест перевода денег между счетами
-            BankService bankService = new BankService();
-            //Устанавливаем через делегат способ обмена валюты
-            Func<double, Currency, Currency, double> transferMoney = new  Exchange<Currency>().CurrencyExchange;    
-            bankService.RegisterTransfer(transferMoney);
-            //собственно сам перевод денег со счета на счет  без комиссии
-            bankService.TransferMoney(10, account1, account2, transferMoney);
-            Console.WriteLine("Стало");
-            Console.WriteLine($"{account1.value} {account1.currency}");
-            Console.WriteLine($"{account2.value} {account2.currency}");
-            //перевод денег со счета на счет с комиссией
-            bankService.TransferMoneyWithTax(11, account1, account2, transferMoney);
-            Console.WriteLine("Стало");
-            Console.WriteLine($"{account1.value} {account1.currency}");
-            Console.WriteLine($"{account2.value} {account2.currency}");
             //Словарь клентов до добавления нового счета Hryvnia
             Console.WriteLine("Клиенты до добавления нового счета:");
             foreach (var item in dictOfClients)
@@ -63,18 +45,15 @@ namespace BankSystem
                 }
             }
 
-                Client client1 = new Client("Abrikosov", 22, "a-11111111");    //Такой клиент уже есть
-                Client client2 = new Client("Yablokov", 33, "y-12121212");     //Новый клиент
-                Client client3 = new Client("Kartoshkin", 13,"k-13131313");     //Новый клиент вызовет исключение WrongAgeException
+            Client client1 = new Client("Abrikosov", 22, "a-11111111");    //Такой клиент уже есть
+            Client client2 = new Client("Yablokov", 33, "y-12121212");     //Новый клиент
+            //Client client3 = new Client("Kartoshkin", 13,"k-13131313");     //Новый клиент вызовет исключение WrongAgeException
             
-                BankService.AddClientAccount(account3, client1, dictOfClients);  //Добавили счет с гривнами для Абрикосова
-                BankService.AddClientAccount(account3, client2, dictOfClients);  //Добавили Яблокова с единственным счетом в гривнах
-                BankService.AddClientAccount(account3, client3, dictOfClients);  //Добавили Картошкина который дожен вызвать исключение
-
-            
+            BankService.AddClientAccount(account3, client1, dictOfClients);  //Добавили счет с гривнами для Абрикосова
+            BankService.AddClientAccount(account3, client2, dictOfClients);  //Добавили Яблокова с единственным счетом в гривнах
             
             //Словарь клентов после добавления нового счета Hryvnia
-            Console.WriteLine("Клиенты после добавления нового счета:");
+            Console.WriteLine("\nКлиенты после добавления нового счета:");
             foreach (var item in dictOfClients)
             {
                 Console.WriteLine($"{item.Key}");
@@ -85,7 +64,5 @@ namespace BankSystem
             }
 
         }
-        
-        
     }
 }
