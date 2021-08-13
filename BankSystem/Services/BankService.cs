@@ -9,18 +9,14 @@ namespace BankSystem
 {
     public class BankService
     {
+        //основной словарь клиентов
         public Dictionary<Client, List<Account>> dictOfClients = new Dictionary<Client, List<Account>>();
+        //словарь клиентов который прочитан из файла
         public Dictionary<Client, List<Account>> dictOfClientsfromFile = new Dictionary<Client, List<Account>>();
 
-        public static string ClientsDirectory = "clients"; 
         public static string MainPath = Path.Combine("TestFiles");
-        //public static string ClientsPath = Path.Combine("TestFiles", ClientsDirectory);
         public DirectoryInfo MainDirectoryInfo = new DirectoryInfo(MainPath);
-        //public DirectoryInfo ClientsDirectoryInfo = new DirectoryInfo(ClientsPath);
         public static string ClientsfileName = "clients.txt";
-        //Делегат
-        //public delegate double Transfer(double sum, Currency fromCurrency, Currency toCurrency);
-        //Func
         public Func<double, Currency, Currency, double> _transfer;
 
         public void RegisterTransfer(Func<double, Currency, Currency, double> transfer)
@@ -35,7 +31,11 @@ namespace BankSystem
             Person person = new Person(){PassportNumber = PassportNumber};
             return listOfPersons.Find(x => x.Equals(person));
         }
-        
+
+        public void AddClient(Client newClient)
+        {
+            dictOfClients.Add(newClient, new List<Account>());
+        }
         //Добавление нового клиента в словарь
         public void AddClient(string name, int age, string passportnumber)
         {
@@ -46,38 +46,9 @@ namespace BankSystem
                 {
                     throw new WrongAgeException("Недопустимый возраст клиента: возраст меньше 18!");
                 }
-                else if (!dictOfClients.ContainsKey(client))
+                else if (dictOfClients.ContainsKey(client) == false)
                 {
                     dictOfClients.Add(client, new List<Account>());
-                    /*
-                    if (!MainDirectoryInfo.Exists)
-                    {
-                        MainDirectoryInfo.Create();
-                    }
-                    using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Append))
-                    {
-                        string clientSeparator = ";\n";
-                        string fieldSeparator = " ";
-                        string accountSeparator = ",";
-                        string clientString = client.Name + fieldSeparator + 
-                                              client.Age + fieldSeparator + 
-                                              client.PassportNumber;
-                        string accountString = "";
-                        List<Account> listOfAccounts = new List<Account>();
-                        if (listOfAccounts.Count != 0)
-                        {
-                            foreach (var account in listOfAccounts)
-                            {
-                                accountString +=  accountSeparator + 
-                                                  account.currency + fieldSeparator + account.value;
-                            }    
-                        }
-                        clientString += accountString + clientSeparator;
-                        byte[] textArray = System.Text.Encoding.Default.GetBytes(clientString);
-                        fileStream.Write(textArray,0,textArray.Length);
-                
-                    }
-                    */
                 }
             }
             catch (WrongAgeException e)
@@ -86,28 +57,13 @@ namespace BankSystem
             }
         }
         
-        //ДОбавление нового счета Account пользователю в словаре
+        //Добавление нового счета Account пользователю в словаре
         public void AddClientAccount(Account account, Client client)
         {
-           
-            if (!MainDirectoryInfo.Exists)
-            {
-                MainDirectoryInfo.Create();
-            }
-            
-            using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Append))
-            {
-                //string sometext = "Некоторый текст";
-                //byte[] textArray = System.Text.Encoding.Default.GetBytes(sometext);
-                //fileStream.Write(textArray,0,textArray.Length);
-                
-                
-            }
-            
             //если такого клиента нет в словаре - создаем нового клиента
             if (dictOfClients.ContainsKey(client) == false)
             {
-                AddClient(client.Name, client.Age, client.Name);
+                //AddClient(client.Name, client.Age, client.PassportNumber);
                 dictOfClients.Add(client, new List<Account>() { account });
             }
             //если искомый уже клиент есть, добавляется ещё один Account в listOfAccounts
@@ -169,7 +125,7 @@ namespace BankSystem
             }
         }
         
-        //Запись словаря в текстовый файл
+        //Запись словаря dictOfClients в текстовый файл
         public void WriteClientsToFile()
         {
             if (!MainDirectoryInfo.Exists)
@@ -203,7 +159,7 @@ namespace BankSystem
             }
             
         }
-        //чтение из файла
+        //чтение из файла в словарь dictOfClientsFromFile
         public void ReadClientsFromFile()
         {
             char fieldSeparator = ' ';      //разделитель полей
@@ -219,7 +175,6 @@ namespace BankSystem
                 //парсинг клиентов и счетов из строки
                 //строки с клиентами
                 string[] arrayStringClients = fileString.Split(clientSeparator);
-                Console.WriteLine("Прочитано из файла");
                 foreach (var stringClient in arrayStringClients)
                 {
                     if (stringClient != "")
@@ -255,15 +210,7 @@ namespace BankSystem
                     
                     
                 }
-                //проверка, вывод содержимого dictofClientsFromFile
-                foreach (var item in dictOfClientsfromFile)
-                {
-                    Console.WriteLine($"{item.Key.PassportNumber} {item.Key.Name} {item.Key.Age}");
-                    foreach (var account in item.Value)
-                    {
-                        Console.WriteLine($"    - {account.currency} - {account.value}");
-                    }
-                }
+                
             }
         }
     }
