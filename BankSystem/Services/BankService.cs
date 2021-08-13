@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using BankSystem.Exceptions;
 
 namespace BankSystem
@@ -178,7 +179,7 @@ namespace BankSystem
             {
                 string fieldSeparator = " ";
                 string accountSeparator = ",";
-                string clientSeparator = ";\n";
+                string clientSeparator = "\n";
                 string clientString = "";
                 foreach (var item in dictOfClients)
                 {
@@ -205,14 +206,41 @@ namespace BankSystem
 
         public void ReadClientsFromFile()
         {
-            string fieldSeparator = " ";
-            string accountSeparator = ",";
-            string clientSeparator = ";\n";
-            string clientString = "";
+            char fieldSeparator = ' ';
+            char accountSeparator = ',';
+            char clientSeparator = '\n';
 
             using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Open))
             {
+                byte[] filearray = new byte[fileStream.Length];
+                fileStream.Read(filearray, 0, filearray.Length);
+                string fileString = System.Text.Encoding.Default.GetString(filearray);
                 
+                //парсинг клиентов и счетов из строки
+                //строки с клиентами
+                string[] arrayStringClients = fileString.Split(clientSeparator);
+                
+                foreach (var stringClient in arrayStringClients)
+                {
+                    //строки [0] - клиент, остальное счета
+                    string[] arrayStringAccounts = stringClient.Split(accountSeparator);
+                    string[] arrayclient = arrayStringAccounts[0].Split(fieldSeparator);
+                    //парсинг информации о клиенте
+                    string clientPassportnumber = arrayclient[0];
+                    string clientName = arrayclient[1];
+                    string clientAge = arrayclient[2];
+                    Client client = new Client() {Name = clientName, Age = Int32.Parse(clientAge), PassportNumber = clientPassportnumber};
+                    //парсинг счетов
+                    List<Account> listOfAccounts = new List<Account>();
+                    for (int i = 1; i < arrayStringAccounts.Length; i++)
+                    {
+                        string[] strAccount = arrayStringAccounts[i].Split(accountSeparator);
+                        string strCurrencyName = strAccount[0];
+                        string strValue = strAccount[1];
+                        
+                        listOfAccounts.Add(new Account(){currency = new Currency(), value = Double.Parse(strValue)});
+                    }
+                }
             }
         }
     }

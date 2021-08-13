@@ -86,8 +86,8 @@ namespace BankSystem
                 bankService.AddClientAccount(account3, client2);  
                 bankService.AddClientAccount(account3, client3);  
                
-                //bankService.WriteClientsToFile();
-                bankService.ReadClientsFromFile();
+                bankService.WriteClientsToFile();
+                //bankService.ReadClientsFromFile();
             
             
             Console.WriteLine("Клиенты:");
