@@ -10,6 +10,7 @@ namespace BankSystem
     public class BankService
     {
         public Dictionary<Client, List<Account>> dictOfClients = new Dictionary<Client, List<Account>>();
+        public Dictionary<Client, List<Account>> dictOfClientsfromFile = new Dictionary<Client, List<Account>>();
 
         public static string ClientsDirectory = "clients"; 
         public static string MainPath = Path.Combine("TestFiles");
@@ -167,7 +168,8 @@ namespace BankSystem
                 Console.WriteLine(e.Message);
             }
         }
-
+        
+        //Запись словаря в текстовый файл
         public void WriteClientsToFile()
         {
             if (!MainDirectoryInfo.Exists)
@@ -177,9 +179,9 @@ namespace BankSystem
             
             using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Append))
             {
-                string fieldSeparator = " ";
-                string accountSeparator = ",";
-                string clientSeparator = "\n";
+                string fieldSeparator = " ";    //разделитель полей
+                string accountSeparator = ",";  //разделитель информации о клиенте и счетов
+                string clientSeparator = "\n";  //разделитель клиентов
                 string clientString = "";
                 foreach (var item in dictOfClients)
                 {
@@ -193,22 +195,20 @@ namespace BankSystem
                                          account.currency + fieldSeparator + 
                                          account.value.ToString();
                     }
-
                     clientString += accountString;
                     clientString += clientSeparator;
                 }
                 byte[] clientArray = System.Text.Encoding.Default.GetBytes(clientString);
                 fileStream.Write(clientArray,0,clientArray.Length);
-                
             }
             
         }
-
+        //чтение из файла
         public void ReadClientsFromFile()
         {
-            char fieldSeparator = ' ';
-            char accountSeparator = ',';
-            char clientSeparator = '\n';
+            char fieldSeparator = ' ';      //разделитель полей
+            char accountSeparator = ',';    //разделитель информации о клиенте и счетов
+            char clientSeparator = '\n';    //разделитель клиентов
 
             using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Open))
             {
@@ -219,12 +219,12 @@ namespace BankSystem
                 //парсинг клиентов и счетов из строки
                 //строки с клиентами
                 string[] arrayStringClients = fileString.Split(clientSeparator);
-                
+                Console.WriteLine("Прочитано из файла");
                 foreach (var stringClient in arrayStringClients)
                 {
                     if (stringClient != "")
                     {
-                        //строки [0] - клиент, остальное счета
+                        //строки [0] - клиент, [1] и далее это счета
                         string[] arrayStringAccounts = stringClient.Split(accountSeparator);
                         string[] arrayclient = arrayStringAccounts[0].Split(fieldSeparator);
                         //парсинг информации о клиенте
@@ -232,26 +232,37 @@ namespace BankSystem
                         string clientName = arrayclient[1];
                         string clientAge = arrayclient[2];
                         Client client = new Client() {Name = clientName, Age = Int32.Parse(clientAge), PassportNumber = clientPassportnumber};
-                        Console.Write($"{client.PassportNumber} {client.Name} {client.Age}");
                         //парсинг счетов
                         List<Account> listOfAccounts = new List<Account>();
-                        //Console.WriteLine(arrayStringAccounts);
-                    
                         for (int i = 1; i < arrayStringAccounts.Length; i++)
                         {
-                            Console.Write("," + arrayStringAccounts[i]);
-                            /*
-                            string[] strAccount = arrayStringAccounts[i].Split(accountSeparator);
+                            string[] strAccount = arrayStringAccounts[i].Split(fieldSeparator);
                             string strCurrencyName = strAccount[0];
                             string strValue = strAccount[1];
-                            Console.Write($"    - {strCurrencyName} - {strValue}");
-                            */
-                            //listOfAccounts.Add(new Account(){currency = new Currency(), value = Double.Parse(strValue)});
+                            Currency currency = null;
+                            switch (strCurrencyName)
+                            {
+                                case "BankSystem.Dollar": currency = new Dollar() { CurrencyName = "Dollar", rate = 1 }; break;
+                                case "BankSystem.Ruble": currency = new Ruble() { CurrencyName = "Ruble", rate = 77 }; break;
+                                case "BankSystem.Leu": currency = new Leu() { CurrencyName = "Leu", rate = 12 }; break;
+                                case "BankSystem.Hryvnia": currency = new Hryvnia() { CurrencyName = "Hryvnia", rate = 27 }; break;
+                                default: break;
+                            }
+                            listOfAccounts.Add(new Account(){currency = currency, value = Double.Parse(strValue)});
                         }
-                        Console.Write("\n");
+                        dictOfClientsfromFile.Add(client,listOfAccounts);
                     }
                     
                     
+                }
+                //проверка, вывод содержимого dictofClientsFromFile
+                foreach (var item in dictOfClientsfromFile)
+                {
+                    Console.WriteLine($"{item.Key.PassportNumber} {item.Key.Name} {item.Key.Age}");
+                    foreach (var account in item.Value)
+                    {
+                        Console.WriteLine($"    - {account.currency} - {account.value}");
+                    }
                 }
             }
         }

@@ -90,7 +90,7 @@ namespace BankSystem
                 bankService.ReadClientsFromFile();
             
             
-            Console.WriteLine("Клиенты:");
+            Console.WriteLine("Вывод из словаря:");
             foreach (var item in bankService.dictOfClients)
             {
                 Console.WriteLine($"{item.Key.PassportNumber} {item.Key.Name} {item.Key.Age}");
