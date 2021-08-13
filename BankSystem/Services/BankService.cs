@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using BankSystem.Exceptions;
 
@@ -7,6 +8,8 @@ namespace BankSystem
 {
     public class BankService
     {
+        public Dictionary<Client, List<Account>> dictOfClients = new Dictionary<Client, List<Account>>();
+
         //Делегат
         //public delegate double Transfer(double sum, Currency fromCurrency, Currency toCurrency);
         //Func
@@ -21,17 +24,54 @@ namespace BankSystem
         //обобщенный метод. работает только с экземплярами и наследниками Person
         public static Person FindPersonByPassportNumber<T>(string PassportNumber, List<T> listOfPersons) where T: Person
         {
-            Person person = new Person("", 30,PassportNumber);
+            Person person = new Person(){PassportNumber = PassportNumber};
             return listOfPersons.Find(x => x.Equals(person));
         }
         
-        //ДОбавление нового счета Account пользователю в словаре
-        public static void AddClientAccount(Account account, Client client, Dictionary<Client, List<Account>> dictOfClients)
+        //Добавление нового клиента в словарь
+        public void AddClient(string name, int age, string passportnumber)
         {
+            try
+            {
+                Client client = new Client() { Name = name, Age = age, PassportNumber = passportnumber };
+                if (age < 18)
+                {
+                    throw new WrongAgeException("Недопустимый возраст клиента: возраст меньше 18!");
+                }
+                else if (!dictOfClients.ContainsKey(client))
+                {
+                    dictOfClients.Add(client, new List<Account>());
+
+                }
+            }
+            catch (WrongAgeException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+        
+        //ДОбавление нового счета Account пользователю в словаре
+        public void AddClientAccount(Account account, Client client)
+        {
+            string path = Path.Combine("TestFiles");
+            DirectoryInfo directoryInfo = new DirectoryInfo(path);
+
+            if (!directoryInfo.Exists)
+            {
+                directoryInfo.Create();
+            }
+
+            using (FileStream fileStream = new FileStream($"{path}\\clients.txt", FileMode.Append))
+            {
+                string sometext = "Некоторый текст";
+                byte[] textArray = System.Text.Encoding.Default.GetBytes(sometext);
+                fileStream.Write(textArray,0,textArray.Length);
+            }
             //если такого клиента нет в словаре - создаем нового клиента
             if (dictOfClients.ContainsKey(client) == false)
             {
-                dictOfClients.Add(client, new List<Account>(){account});
+                AddClient(client.Name, client.Age, client.Name);
+                dictOfClients.Add(client, new List<Account>() { account });
             }
             //если искомый уже клиент есть, добавляется ещё один Accaunt в listOfAccounts
             else

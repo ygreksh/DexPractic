@@ -9,27 +9,8 @@ namespace BankSystem
         public int Age { get; set; }
         public string PassportNumber { get; set; }
 
-        public Person(string name, int age, string passportNumber)
-        {
-            /*
-            if (age < 18)
-            {
-                throw new WrongAgeException("Неправильный возраст!");
-            }
-            else
-            */
-            {
-                Name = name;
-                Age = age;
-                PassportNumber = passportNumber;    
-            }
-            
-        }
 
-        Person()
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public override int GetHashCode()
         {
