@@ -63,37 +63,34 @@ namespace BankSystem
             Console.WriteLine($"{account2.value} {account2.currency}");
             //перевод денег со счета на счет с комиссией
             bankService.TransferMoneyWithTax(11, account1, account2, transferMoney);
+            
             Console.WriteLine("Стало");
             Console.WriteLine($"{account1.value} {account1.currency}");
             Console.WriteLine($"{account2.value} {account2.currency}");
             */
             //Словарь клентов до добавления нового счета Hryvnia
-            Console.WriteLine("Клиенты до добавления нового счета:");
-            foreach (var item in bankService.dictOfClients)
-            {
-                Console.WriteLine($"{item.Key.PassportNumber} {item.Key.Name} {item.Key.Age}");
-                foreach (var account in item.Value)
-                {
-                    Console.WriteLine($"    - {account.currency} - {account.value}");
-                }
-            }
+            
+            
                 
                 bankService.AddClient("Abrikosov", 33,"a-11111111");    //Добавили Абрикосова, такой в словаре уже есть
                 bankService.AddClient("Yablokov", 24,"y-12121212");     //Добавили Яблокова
-                bankService.AddClient("Kartoshkin", 13,"k-13131313");   //Добавили Картошкина который дожен вызвать исключение
+                bankService.AddClient("Kartoshkin", 66,"k-13131313");   //Добавили Картошкина который дожен вызвать исключение
 
                 Client client1 = new Client(){Name = "Abrikosov",Age = 33,PassportNumber = "a-11111111"};    //Такой клиент уже есть
                 Client client2 = new Client(){Name = "Yablokov",Age = 24,PassportNumber = "y-12121212"};     //Новый клиент
-                Client client3 = new Client(){Name = "Kartoshkin",Age = 13,PassportNumber = "k-13131313"};     //Новый клиент вызовет исключение WrongAgeException
+                Client client3 = new Client(){Name = "Kartoshkin",Age = 66,PassportNumber = "k-13131313"};     //Новый клиент вызовет исключение WrongAgeException
                 
-                bankService.AddClientAccount(account3, client1);  //Добавили счет с гривнами для Абрикосова
-                bankService.AddClientAccount(account3, client2);  //Добавили Яблокова с единственным счетом в гривнах
-                bankService.AddClientAccount(account3, client3);  //Добавили Картошкина который дожен вызвать исключение
-                
+                bankService.AddClientAccount(account1, client1);  
+                bankService.AddClientAccount(account2, client1);  
+                bankService.AddClientAccount(account3, client1);  
+                bankService.AddClientAccount(account3, client2);  
+                bankService.AddClientAccount(account3, client3);  
+               
+                //bankService.WriteClientsToFile();
+                bankService.ReadClientsFromFile();
             
             
-            //Словарь клентов после добавления нового счета Hryvnia                 
-            Console.WriteLine("Клиенты после добавления нового счета:");
+            Console.WriteLine("Клиенты:");
             foreach (var item in bankService.dictOfClients)
             {
                 Console.WriteLine($"{item.Key.PassportNumber} {item.Key.Name} {item.Key.Age}");
@@ -102,6 +99,7 @@ namespace BankSystem
                     Console.WriteLine($"    - {account.currency} - {account.value}");
                 }
             }
+            
 
         }
         

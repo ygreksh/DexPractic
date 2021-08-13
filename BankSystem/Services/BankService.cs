@@ -10,6 +10,12 @@ namespace BankSystem
     {
         public Dictionary<Client, List<Account>> dictOfClients = new Dictionary<Client, List<Account>>();
 
+        public static string ClientsDirectory = "clients"; 
+        public static string MainPath = Path.Combine("TestFiles");
+        //public static string ClientsPath = Path.Combine("TestFiles", ClientsDirectory);
+        public DirectoryInfo MainDirectoryInfo = new DirectoryInfo(MainPath);
+        //public DirectoryInfo ClientsDirectoryInfo = new DirectoryInfo(ClientsPath);
+        public static string ClientsfileName = "clients.txt";
         //Делегат
         //public delegate double Transfer(double sum, Currency fromCurrency, Currency toCurrency);
         //Func
@@ -41,26 +47,35 @@ namespace BankSystem
                 else if (!dictOfClients.ContainsKey(client))
                 {
                     dictOfClients.Add(client, new List<Account>());
-                    
-                    string path = Path.Combine("TestFiles");
-                    DirectoryInfo directoryInfo = new DirectoryInfo(path);
-
-                    if (!directoryInfo.Exists)
+                    /*
+                    if (!MainDirectoryInfo.Exists)
                     {
-                        directoryInfo.Create();
+                        MainDirectoryInfo.Create();
                     }
-                    using (FileStream fileStream = new FileStream($"{path}\\clients.txt", FileMode.Append))
+                    using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Append))
                     {
                         string clientSeparator = ";\n";
                         string fieldSeparator = " ";
                         string accountSeparator = ",";
                         string clientString = client.Name + fieldSeparator + 
                                               client.Age + fieldSeparator + 
-                                              client.PassportNumber + clientSeparator;
+                                              client.PassportNumber;
+                        string accountString = "";
+                        List<Account> listOfAccounts = new List<Account>();
+                        if (listOfAccounts.Count != 0)
+                        {
+                            foreach (var account in listOfAccounts)
+                            {
+                                accountString +=  accountSeparator + 
+                                                  account.currency + fieldSeparator + account.value;
+                            }    
+                        }
+                        clientString += accountString + clientSeparator;
                         byte[] textArray = System.Text.Encoding.Default.GetBytes(clientString);
                         fileStream.Write(textArray,0,textArray.Length);
                 
                     }
+                    */
                 }
             }
             catch (WrongAgeException e)
@@ -72,30 +87,28 @@ namespace BankSystem
         //ДОбавление нового счета Account пользователю в словаре
         public void AddClientAccount(Account account, Client client)
         {
-            /*
-            string path = Path.Combine("TestFiles");
-            DirectoryInfo directoryInfo = new DirectoryInfo(path);
-
-            if (!directoryInfo.Exists)
+           
+            if (!MainDirectoryInfo.Exists)
             {
-                directoryInfo.Create();
+                MainDirectoryInfo.Create();
             }
             
-            using (FileStream fileStream = new FileStream($"{path}\\clients.txt", FileMode.Append))
+            using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Append))
             {
-                string sometext = "Некоторый текст";
-                byte[] textArray = System.Text.Encoding.Default.GetBytes(sometext);
-                fileStream.Write(textArray,0,textArray.Length);
+                //string sometext = "Некоторый текст";
+                //byte[] textArray = System.Text.Encoding.Default.GetBytes(sometext);
+                //fileStream.Write(textArray,0,textArray.Length);
+                
                 
             }
-            */
+            
             //если такого клиента нет в словаре - создаем нового клиента
             if (dictOfClients.ContainsKey(client) == false)
             {
                 AddClient(client.Name, client.Age, client.Name);
                 dictOfClients.Add(client, new List<Account>() { account });
             }
-            //если искомый уже клиент есть, добавляется ещё один Accaunt в listOfAccounts
+            //если искомый уже клиент есть, добавляется ещё один Account в listOfAccounts
             else
             {
                 List<Account> listOfAccounts;
@@ -107,7 +120,8 @@ namespace BankSystem
             }
         }
         //Переод денег между счетами без комиссии
-        public void TransferMoney(double Sum, Account donorAccount, Account recipientAccount, Func<double, Currency, Currency, double> transfermoney)
+        public void TransferMoney(double Sum, Account donorAccount, Account recipientAccount, 
+                                    Func<double, Currency, Currency, double> transfermoney)
         {
             try
             {
@@ -127,7 +141,8 @@ namespace BankSystem
             }
         }
         //Переод денег между счетами с комиссией
-        public void TransferMoneyWithTax(double Sum, Account donorAccount, Account recipientAccount, Func<double, Currency, Currency, double> transfermoney)
+        public void TransferMoneyWithTax(double Sum, Account donorAccount, Account recipientAccount, 
+                                            Func<double, Currency, Currency, double> transfermoney)
         {
             double tax = 1; //размер комиссии
             Dollar dollar = new Dollar() { CurrencyName = "Dollar", rate = 1 }; //валюта комиссии 
@@ -149,6 +164,55 @@ namespace BankSystem
             catch (NotEnoughMoneyException e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+
+        public void WriteClientsToFile()
+        {
+            if (!MainDirectoryInfo.Exists)
+            {
+                MainDirectoryInfo.Create();
+            }
+            
+            using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Append))
+            {
+                string fieldSeparator = " ";
+                string accountSeparator = ",";
+                string clientSeparator = ";\n";
+                string clientString = "";
+                foreach (var item in dictOfClients)
+                {
+                    clientString += item.Key.PassportNumber +  fieldSeparator +
+                                    item.Key.Name +  fieldSeparator +
+                                    item.Key.Age.ToString();
+                    string accountString = "";
+                    foreach (var account in item.Value)
+                    {
+                        accountString += accountSeparator + 
+                                         account.currency + fieldSeparator + 
+                                         account.value.ToString();
+                    }
+
+                    clientString += accountString;
+                    clientString += clientSeparator;
+                }
+                byte[] clientArray = System.Text.Encoding.Default.GetBytes(clientString);
+                fileStream.Write(clientArray,0,clientArray.Length);
+                
+            }
+            
+        }
+
+        public void ReadClientsFromFile()
+        {
+            string fieldSeparator = " ";
+            string accountSeparator = ",";
+            string clientSeparator = ";\n";
+            string clientString = "";
+
+            using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Open))
+            {
+                
             }
         }
     }
