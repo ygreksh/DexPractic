@@ -72,6 +72,7 @@ namespace BankSystem
         //ДОбавление нового счета Account пользователю в словаре
         public void AddClientAccount(Account account, Client client)
         {
+            /*
             string path = Path.Combine("TestFiles");
             DirectoryInfo directoryInfo = new DirectoryInfo(path);
 
@@ -79,7 +80,7 @@ namespace BankSystem
             {
                 directoryInfo.Create();
             }
-            /*
+            
             using (FileStream fileStream = new FileStream($"{path}\\clients.txt", FileMode.Append))
             {
                 string sometext = "Некоторый текст";
