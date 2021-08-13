@@ -18,6 +18,7 @@ namespace BankSystem
                 new Account(){currency = new Leu(){CurrencyName = "Leu", rate = 12}, value = 200}        //200 лей
             }
             */
+            /*
             //Словарь клиентов
             bankService.dictOfClients.Add(new Client(){Name = "Bulochkin", Age = 22, PassportNumber = "b-22222222"}, 
                                 new List<Account>()     //содержимое списка счетов
@@ -34,6 +35,10 @@ namespace BankSystem
                     new Account(){currency = new Leu(){CurrencyName = "Leu", rate = 12}, value = 100}       //000 лей
                 });
 
+            */
+            bankService.AddClient("Bulochkin",22,"b-22222222");
+            bankService.AddClient("Abrikosov",33,"a-11111111");
+            bankService.AddClient("Vinogradov",44,"v-33333333");
             
             //тестовые счета для проверки перевода денег
             Account account1 = new Account() 

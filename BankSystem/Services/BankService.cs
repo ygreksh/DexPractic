@@ -41,7 +41,26 @@ namespace BankSystem
                 else if (!dictOfClients.ContainsKey(client))
                 {
                     dictOfClients.Add(client, new List<Account>());
+                    
+                    string path = Path.Combine("TestFiles");
+                    DirectoryInfo directoryInfo = new DirectoryInfo(path);
 
+                    if (!directoryInfo.Exists)
+                    {
+                        directoryInfo.Create();
+                    }
+                    using (FileStream fileStream = new FileStream($"{path}\\clients.txt", FileMode.Append))
+                    {
+                        string clientSeparator = ";\n";
+                        string fieldSeparator = " ";
+                        string accountSeparator = ",";
+                        string clientString = client.Name + fieldSeparator + 
+                                              client.Age + fieldSeparator + 
+                                              client.PassportNumber + clientSeparator;
+                        byte[] textArray = System.Text.Encoding.Default.GetBytes(clientString);
+                        fileStream.Write(textArray,0,textArray.Length);
+                
+                    }
                 }
             }
             catch (WrongAgeException e)
@@ -60,13 +79,15 @@ namespace BankSystem
             {
                 directoryInfo.Create();
             }
-
+            /*
             using (FileStream fileStream = new FileStream($"{path}\\clients.txt", FileMode.Append))
             {
                 string sometext = "Некоторый текст";
                 byte[] textArray = System.Text.Encoding.Default.GetBytes(sometext);
                 fileStream.Write(textArray,0,textArray.Length);
+                
             }
+            */
             //если такого клиента нет в словаре - создаем нового клиента
             if (dictOfClients.ContainsKey(client) == false)
             {
