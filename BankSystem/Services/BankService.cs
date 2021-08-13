@@ -2,18 +2,26 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using BankSystem.Exceptions;
 
 namespace BankSystem
 {
     public class BankService
     {
+        public Dictionary<Client, List<Account>> dictOfClients = new Dictionary<Client, List<Account>>();
+
+        public static string ClientsDirectory = "clients"; 
+        public static string MainPath = Path.Combine("TestFiles");
+        //public static string ClientsPath = Path.Combine("TestFiles", ClientsDirectory);
+        public DirectoryInfo MainDirectoryInfo = new DirectoryInfo(MainPath);
+        //public DirectoryInfo ClientsDirectoryInfo = new DirectoryInfo(ClientsPath);
+        public static string ClientsfileName = "clients.txt";
         //Делегат
         //public delegate double Transfer(double sum, Currency fromCurrency, Currency toCurrency);
         //Func
         public Func<double, Currency, Currency, double> _transfer;
 
-        public static Dictionary<Client, List<Account>> dictOfClients = new Dictionary<Client, List<Account>>();
         public void RegisterTransfer(Func<double, Currency, Currency, double> transfer)
         {
             _transfer = transfer;
@@ -23,38 +31,85 @@ namespace BankSystem
         //обобщенный метод. работает только с экземплярами и наследниками Person
         public static Person FindPersonByPassportNumber<T>(string PassportNumber, List<T> listOfPersons) where T: Person
         {
-            Person person = new Person("", 30,PassportNumber);
+            Person person = new Person(){PassportNumber = PassportNumber};
             return listOfPersons.Find(x => x.Equals(person));
         }
         
-        public void AddPerson(string name, int age, string passportnumber)
+        //Добавление нового клиента в словарь
+        public void AddClient(string name, int age, string passportnumber)
         {
-            if (age < 18)
+            try
             {
-                throw new WrongAgeException("Возраст меньше 18 лет");
-            }
-            else
-            {
-                Client client = new Client(name, age, passportnumber);
-                dictOfClients.Add(client, new List<Account>());
-                /*
-                using (FileStream fs = new FileStream())
+                Client client = new Client() { Name = name, Age = age, PassportNumber = passportnumber };
+                if (age < 18)
                 {
-                    
+                    throw new WrongAgeException("Недопустимый возраст клиента: возраст меньше 18!");
                 }
-                */
+                else if (!dictOfClients.ContainsKey(client))
+                {
+                    dictOfClients.Add(client, new List<Account>());
+                    /*
+                    if (!MainDirectoryInfo.Exists)
+                    {
+                        MainDirectoryInfo.Create();
+                    }
+                    using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Append))
+                    {
+                        string clientSeparator = ";\n";
+                        string fieldSeparator = " ";
+                        string accountSeparator = ",";
+                        string clientString = client.Name + fieldSeparator + 
+                                              client.Age + fieldSeparator + 
+                                              client.PassportNumber;
+                        string accountString = "";
+                        List<Account> listOfAccounts = new List<Account>();
+                        if (listOfAccounts.Count != 0)
+                        {
+                            foreach (var account in listOfAccounts)
+                            {
+                                accountString +=  accountSeparator + 
+                                                  account.currency + fieldSeparator + account.value;
+                            }    
+                        }
+                        clientString += accountString + clientSeparator;
+                        byte[] textArray = System.Text.Encoding.Default.GetBytes(clientString);
+                        fileStream.Write(textArray,0,textArray.Length);
+                
+                    }
+                    */
+                }
+            }
+            catch (WrongAgeException e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
         
         //ДОбавление нового счета Account пользователю в словаре
-        public static void AddClientAccount(Account account, Client client, Dictionary<Client, List<Account>> dictOfClients)
+        public void AddClientAccount(Account account, Client client)
         {
+           
+            if (!MainDirectoryInfo.Exists)
+            {
+                MainDirectoryInfo.Create();
+            }
+            
+            using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Append))
+            {
+                //string sometext = "Некоторый текст";
+                //byte[] textArray = System.Text.Encoding.Default.GetBytes(sometext);
+                //fileStream.Write(textArray,0,textArray.Length);
+                
+                
+            }
+            
             //если такого клиента нет в словаре - создаем нового клиента
             if (dictOfClients.ContainsKey(client) == false)
             {
-                dictOfClients.Add(client, new List<Account>(){account});
+                AddClient(client.Name, client.Age, client.Name);
+                dictOfClients.Add(client, new List<Account>() { account });
             }
-            //если искомый уже клиент есть, добавляется ещё один Accaunt в listOfAccounts
+            //если искомый уже клиент есть, добавляется ещё один Account в listOfAccounts
             else
             {
                 List<Account> listOfAccounts;
@@ -66,7 +121,8 @@ namespace BankSystem
             }
         }
         //Переод денег между счетами без комиссии
-        public void TransferMoney(double Sum, Account donorAccount, Account recipientAccount, Func<double, Currency, Currency, double> transfermoney)
+        public void TransferMoney(double Sum, Account donorAccount, Account recipientAccount, 
+                                    Func<double, Currency, Currency, double> transfermoney)
         {
             try
             {
@@ -86,7 +142,8 @@ namespace BankSystem
             }
         }
         //Переод денег между счетами с комиссией
-        public void TransferMoneyWithTax(double Sum, Account donorAccount, Account recipientAccount, Func<double, Currency, Currency, double> transfermoney)
+        public void TransferMoneyWithTax(double Sum, Account donorAccount, Account recipientAccount, 
+                                            Func<double, Currency, Currency, double> transfermoney)
         {
             double tax = 1; //размер комиссии
             Dollar dollar = new Dollar() { CurrencyName = "Dollar", rate = 1 }; //валюта комиссии 
@@ -108,6 +165,94 @@ namespace BankSystem
             catch (NotEnoughMoneyException e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+
+        public void WriteClientsToFile()
+        {
+            if (!MainDirectoryInfo.Exists)
+            {
+                MainDirectoryInfo.Create();
+            }
+            
+            using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Append))
+            {
+                string fieldSeparator = " ";
+                string accountSeparator = ",";
+                string clientSeparator = "\n";
+                string clientString = "";
+                foreach (var item in dictOfClients)
+                {
+                    clientString += item.Key.PassportNumber +  fieldSeparator +
+                                    item.Key.Name +  fieldSeparator +
+                                    item.Key.Age.ToString();
+                    string accountString = "";
+                    foreach (var account in item.Value)
+                    {
+                        accountString += accountSeparator + 
+                                         account.currency + fieldSeparator + 
+                                         account.value.ToString();
+                    }
+
+                    clientString += accountString;
+                    clientString += clientSeparator;
+                }
+                byte[] clientArray = System.Text.Encoding.Default.GetBytes(clientString);
+                fileStream.Write(clientArray,0,clientArray.Length);
+                
+            }
+            
+        }
+
+        public void ReadClientsFromFile()
+        {
+            char fieldSeparator = ' ';
+            char accountSeparator = ',';
+            char clientSeparator = '\n';
+
+            using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Open))
+            {
+                byte[] filearray = new byte[fileStream.Length];
+                fileStream.Read(filearray, 0, filearray.Length);
+                string fileString = System.Text.Encoding.Default.GetString(filearray);
+                
+                //парсинг клиентов и счетов из строки
+                //строки с клиентами
+                string[] arrayStringClients = fileString.Split(clientSeparator);
+                
+                foreach (var stringClient in arrayStringClients)
+                {
+                    if (stringClient != "")
+                    {
+                        //строки [0] - клиент, остальное счета
+                        string[] arrayStringAccounts = stringClient.Split(accountSeparator);
+                        string[] arrayclient = arrayStringAccounts[0].Split(fieldSeparator);
+                        //парсинг информации о клиенте
+                        string clientPassportnumber = arrayclient[0];
+                        string clientName = arrayclient[1];
+                        string clientAge = arrayclient[2];
+                        Client client = new Client() {Name = clientName, Age = Int32.Parse(clientAge), PassportNumber = clientPassportnumber};
+                        Console.Write($"{client.PassportNumber} {client.Name} {client.Age}");
+                        //парсинг счетов
+                        List<Account> listOfAccounts = new List<Account>();
+                        //Console.WriteLine(arrayStringAccounts);
+                    
+                        for (int i = 1; i < arrayStringAccounts.Length; i++)
+                        {
+                            Console.Write("," + arrayStringAccounts[i]);
+                            /*
+                            string[] strAccount = arrayStringAccounts[i].Split(accountSeparator);
+                            string strCurrencyName = strAccount[0];
+                            string strValue = strAccount[1];
+                            Console.Write($"    - {strCurrencyName} - {strValue}");
+                            */
+                            //listOfAccounts.Add(new Account(){currency = new Currency(), value = Double.Parse(strValue)});
+                        }
+                        Console.Write("\n");
+                    }
+                    
+                    
+                }
             }
         }
     }
