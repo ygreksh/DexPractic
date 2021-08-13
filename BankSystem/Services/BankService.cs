@@ -222,24 +222,36 @@ namespace BankSystem
                 
                 foreach (var stringClient in arrayStringClients)
                 {
-                    //строки [0] - клиент, остальное счета
-                    string[] arrayStringAccounts = stringClient.Split(accountSeparator);
-                    string[] arrayclient = arrayStringAccounts[0].Split(fieldSeparator);
-                    //парсинг информации о клиенте
-                    string clientPassportnumber = arrayclient[0];
-                    string clientName = arrayclient[1];
-                    string clientAge = arrayclient[2];
-                    Client client = new Client() {Name = clientName, Age = Int32.Parse(clientAge), PassportNumber = clientPassportnumber};
-                    //парсинг счетов
-                    List<Account> listOfAccounts = new List<Account>();
-                    for (int i = 1; i < arrayStringAccounts.Length; i++)
+                    if (stringClient != "")
                     {
-                        string[] strAccount = arrayStringAccounts[i].Split(accountSeparator);
-                        string strCurrencyName = strAccount[0];
-                        string strValue = strAccount[1];
-                        
-                        listOfAccounts.Add(new Account(){currency = new Currency(), value = Double.Parse(strValue)});
+                        //строки [0] - клиент, остальное счета
+                        string[] arrayStringAccounts = stringClient.Split(accountSeparator);
+                        string[] arrayclient = arrayStringAccounts[0].Split(fieldSeparator);
+                        //парсинг информации о клиенте
+                        string clientPassportnumber = arrayclient[0];
+                        string clientName = arrayclient[1];
+                        string clientAge = arrayclient[2];
+                        Client client = new Client() {Name = clientName, Age = Int32.Parse(clientAge), PassportNumber = clientPassportnumber};
+                        Console.Write($"{client.PassportNumber} {client.Name} {client.Age}");
+                        //парсинг счетов
+                        List<Account> listOfAccounts = new List<Account>();
+                        //Console.WriteLine(arrayStringAccounts);
+                    
+                        for (int i = 1; i < arrayStringAccounts.Length; i++)
+                        {
+                            Console.Write("," + arrayStringAccounts[i]);
+                            /*
+                            string[] strAccount = arrayStringAccounts[i].Split(accountSeparator);
+                            string strCurrencyName = strAccount[0];
+                            string strValue = strAccount[1];
+                            Console.Write($"    - {strCurrencyName} - {strValue}");
+                            */
+                            //listOfAccounts.Add(new Account(){currency = new Currency(), value = Double.Parse(strValue)});
+                        }
+                        Console.Write("\n");
                     }
+                    
+                    
                 }
             }
         }
