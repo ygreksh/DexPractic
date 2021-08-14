@@ -31,14 +31,11 @@ namespace BankSystem
             Person person = new Person(){PassportNumber = PassportNumber};
             return listOfPersons.Find(x => x.Equals(person));
         }
-
-        public void AddClient(Client newClient)
-        {
-            dictOfClients.Add(newClient, new List<Account>());
-        }
+        
         //Добавление нового клиента в словарь
         public void AddClient(string name, int age, string passportnumber)
         {
+            
             try
             {
                 Client client = new Client() { Name = name, Age = age, PassportNumber = passportnumber };
