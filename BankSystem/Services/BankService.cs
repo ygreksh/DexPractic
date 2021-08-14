@@ -76,7 +76,10 @@ namespace BankSystem
             }
         }
         
-        //Добавление одного нового клиента в файл
+        /*  Добавление одного нового клиента в файл
+         *   формат записи в файле
+         *   PassportNumber Name Age, currency value, currency value, ... \n 
+        */
         public void AddClientToFile(Client client, List<Account> listOfAccounts)
         {
             Dictionary<Client, List<Account>> dictOfClientsFromFile = ReadClientsFromFile();
