@@ -25,16 +25,28 @@ namespace BankSystem
         
 
         //обобщенный метод. работает только с экземплярами и наследниками Person
-        public static Person FindPersonByPassportNumber<T>(string PassportNumber, List<T> listOfPersons) where T: Person
+        public static Person FindPerson<T>(string PassportNumber, List<T> listOfPersons) where T: Person
         {
             Person person = new Person(){PassportNumber = PassportNumber};
             return listOfPersons.Find(x => x.Equals(person));
         }
         
+        //поиск в файле
+        public static Person FindPersonInFile<T>(string PassportNumber) where T: Person
+        {
+            Dictionary<Client, List<Account>> dictOfPersons = ReadClientsFromFile();
+            List<Person> listOfPersons = null;
+            //из словаря в список
+            foreach (var item in dictOfPersons)
+            {
+                listOfPersons.Add(item.Key);
+            }
+            return FindPerson(PassportNumber, listOfPersons);
+        }
+        
         //Добавление нового клиента в словарь
         public void AddClient(string name, int age, string passportnumber)
         {
-            
             try
             {
                 Client client = new Client() { Name = name, Age = age, PassportNumber = passportnumber };
@@ -44,7 +56,9 @@ namespace BankSystem
                 }
                 else if (dictOfClients.ContainsKey(client) == false)
                 {
-                    dictOfClients.Add(client, new List<Account>());
+                    List<Account> listOfAccounts = new List<Account>();
+                    dictOfClients.Add(client, listOfAccounts);  //добавление в словарь
+                    AddClientToFile(client, listOfAccounts);    //добавление в файл
                 }
             }
             catch (WrongAgeException e)
@@ -53,25 +67,53 @@ namespace BankSystem
             }
         }
         
-        //Добавление нового счета Account пользователю в словаре
+        //Добавление нового клиента в файл
+        public void AddClientToFile(Client client, List<Account> listOfAccounts)
+        {
+            if (!MainDirectoryInfo.Exists)
+            {
+                MainDirectoryInfo.Create();
+            }
+            
+            using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Append))
+            {
+                string fieldSeparator = " ";    //разделитель полей
+                string accountSeparator = ",";  //разделитель информации о клиенте и счетов
+                string clientSeparator = "\n";  //разделитель клиентов
+                string clientString = "";
+                
+                    clientString += client.PassportNumber +  fieldSeparator +
+                                    client.Name +  fieldSeparator +
+                                    client.Age.ToString();
+                    string accountString = "";
+                    foreach (var account in listOfAccounts)
+                    {
+                        accountString += accountSeparator + 
+                                         account.currency + fieldSeparator + 
+                                         account.value.ToString();
+                    }
+                    clientString += accountString;
+                    clientString += clientSeparator;
+                
+                byte[] clientArray = System.Text.Encoding.Default.GetBytes(clientString);
+                fileStream.Write(clientArray,0,clientArray.Length);
+            }
+        }
+        
+        //Добавление нового счета Account пользователю в словаре и файле
         public void AddClientAccount(Account account, Client client)
         {
             //если такого клиента нет в словаре - создаем нового клиента
             if (dictOfClients.ContainsKey(client) == false)
             {
-                dictOfClients.Add(client, new List<Account>() { account });
+                List<Account> listOfAccounts = new List<Account>();
+                listOfAccounts.Add(account);
+                dictOfClients.Add(client, listOfAccounts);  //добавление в словарь
+                AddClientToFile(client, listOfAccounts);
             }
             //если искомый уже клиент есть, добавляется ещё один Account в listOfAccounts
             else
             {
-                
-                //List<Account> listOfAccounts;
-                //dictOfClients.TryGetValue(client, out listOfAccounts);
-                //Client foundclient = (Client)FindPersonByPassportNumber<Client>(client.PassportNumber, dictOfClients.Keys.ToList());
-                //listOfAccounts.Add(account);
-                //dictOfClients.Remove(foundclient);
-                //dictOfClients.Add(foundclient, listOfAccounts);
-                
                 dictOfClients[client].Add(account);
             }
         }
@@ -158,7 +200,7 @@ namespace BankSystem
             
         }
         //чтение из файла в словарь dictOfClientsFromFile
-        public Dictionary<Client, List<Account>> ReadClientsFromFile()
+        public static Dictionary<Client, List<Account>> ReadClientsFromFile()
         {
             //словарь клиентов который будет прочитан из файла
             Dictionary<Client, List<Account>> dictOfClientsfromFile = new Dictionary<Client, List<Account>>();
@@ -205,7 +247,12 @@ namespace BankSystem
                             }
                             listOfAccounts.Add(new Account(){currency = currency, value = Double.Parse(strValue)});
                         }
-                        dictOfClientsfromFile.Add(client,listOfAccounts);
+
+                        if (!dictOfClientsfromFile.ContainsKey(client))
+                        {
+                            dictOfClientsfromFile.Add(client,listOfAccounts);
+                            
+                        }
                     }
                     
                     

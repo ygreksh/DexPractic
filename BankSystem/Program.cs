@@ -52,7 +52,7 @@ namespace BankSystem
             
             //bankService.WriteClientsToFile();     //запись в файл
             Dictionary<Client, List<Account>> dictOfClientsfromFile;
-            dictOfClientsfromFile = bankService.ReadClientsFromFile();      //чтение из файла
+            dictOfClientsfromFile = BankService.ReadClientsFromFile();      //чтение из файла
             
             Console.WriteLine("Вывод из словаря:");
             foreach (var item in bankService.dictOfClients)
