@@ -51,7 +51,8 @@ namespace BankSystem
             bankService.AddClientAccount(account3, client3);  
             
             //bankService.WriteClientsToFile();     //запись в файл
-            bankService.ReadClientsFromFile();      //чтение из файла
+            Dictionary<Client, List<Account>> dictOfClientsfromFile;
+            dictOfClientsfromFile = bankService.ReadClientsFromFile();      //чтение из файла
             
             Console.WriteLine("Вывод из словаря:");
             foreach (var item in bankService.dictOfClients)
@@ -65,7 +66,7 @@ namespace BankSystem
             //проверка, вывод содержимого dictofClientsFromFile
             Console.WriteLine("-------------------------------------------------");
             Console.WriteLine("Вывод из файла:");
-            foreach (var item in bankService.dictOfClientsfromFile)
+            foreach (var item in dictOfClientsfromFile)
             {
                 Console.WriteLine($"{item.Key.PassportNumber} {item.Key.Name} {item.Key.Age}");
                 foreach (var account in item.Value)

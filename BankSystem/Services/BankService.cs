@@ -11,8 +11,7 @@ namespace BankSystem
     {
         //основной словарь клиентов
         public Dictionary<Client, List<Account>> dictOfClients = new Dictionary<Client, List<Account>>();
-        //словарь клиентов который прочитан из файла
-        public Dictionary<Client, List<Account>> dictOfClientsfromFile = new Dictionary<Client, List<Account>>();
+        
 
         public static string MainPath = Path.Combine("TestFiles");
         public DirectoryInfo MainDirectoryInfo = new DirectoryInfo(MainPath);
@@ -60,18 +59,20 @@ namespace BankSystem
             //если такого клиента нет в словаре - создаем нового клиента
             if (dictOfClients.ContainsKey(client) == false)
             {
-                //AddClient(client.Name, client.Age, client.PassportNumber);
                 dictOfClients.Add(client, new List<Account>() { account });
             }
             //если искомый уже клиент есть, добавляется ещё один Account в listOfAccounts
             else
             {
-                List<Account> listOfAccounts;
-                dictOfClients.TryGetValue(client, out listOfAccounts);
-                Client foundclient = (Client)FindPersonByPassportNumber<Client>(client.PassportNumber, dictOfClients.Keys.ToList());
-                listOfAccounts.Add(account);
-                dictOfClients.Remove(foundclient);
-                dictOfClients.Add(foundclient, listOfAccounts);
+                
+                //List<Account> listOfAccounts;
+                //dictOfClients.TryGetValue(client, out listOfAccounts);
+                //Client foundclient = (Client)FindPersonByPassportNumber<Client>(client.PassportNumber, dictOfClients.Keys.ToList());
+                //listOfAccounts.Add(account);
+                //dictOfClients.Remove(foundclient);
+                //dictOfClients.Add(foundclient, listOfAccounts);
+                
+                dictOfClients[client].Add(account);
             }
         }
         //Переод денег между счетами без комиссии
@@ -157,8 +158,10 @@ namespace BankSystem
             
         }
         //чтение из файла в словарь dictOfClientsFromFile
-        public void ReadClientsFromFile()
+        public Dictionary<Client, List<Account>> ReadClientsFromFile()
         {
+            //словарь клиентов который будет прочитан из файла
+            Dictionary<Client, List<Account>> dictOfClientsfromFile = new Dictionary<Client, List<Account>>();
             char fieldSeparator = ' ';      //разделитель полей
             char accountSeparator = ',';    //разделитель информации о клиенте и счетов
             char clientSeparator = '\n';    //разделитель клиентов
@@ -207,7 +210,7 @@ namespace BankSystem
                     
                     
                 }
-                
+                return dictOfClientsfromFile;
             }
         }
     }
