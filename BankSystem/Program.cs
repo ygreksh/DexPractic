@@ -49,8 +49,22 @@ namespace BankSystem
             bankService.AddClientAccount(account3, client1); 
             bankService.AddClientAccount(account1, client2);  
             bankService.AddClientAccount(account3, client3);  
+                        
+            bankService.WriteClientsToFile();     //запись в файл
+            //Дозапись нового клиента счетов к ним
+            Account account4 = new Account() 
+                { currency = new Dollar() { CurrencyName = "Dollar", rate = 1 }, value = 6 };
+            Account account5 = new Account() 
+                { currency = new Ruble() { CurrencyName = "Ruble", rate = 77 }, value = 66 };
+            Account account6 = new Account()
+                { currency = new Hryvnia() { CurrencyName = "Hryvnia", rate = 27 }, value = 666 };
+            Account account7 = new Account()
+                { currency = new Leu() { CurrencyName = "Leu", rate = 18 }, value = 6666 };
+
+            Client client4 = new Client(){Name = "Dubov",Age = 33,PassportNumber = "d-63636363"};
+            bankService.AddClient(client4);
+            bankService.AddClientToFile(client4, new List<Account>(){account4,account5,account6,account7});
             
-            //bankService.WriteClientsToFile();     //запись в файл
             Dictionary<Client, List<Account>> dictOfClientsfromFile;
             dictOfClientsfromFile = BankService.ReadClientsFromFile();      //чтение из файла
             

@@ -43,7 +43,15 @@ namespace BankSystem
             }
             return FindPerson(PassportNumber, listOfPersons);
         }
-        
+
+        public void AddClient(Client client)
+        {
+            if (!dictOfClients.ContainsKey(client))
+            {
+                List<Account> listOfAccounts = new List<Account>();
+                dictOfClients.Add(client, listOfAccounts);  //добавление в словарь
+            }
+        }
         //Добавление нового клиента в словарь
         public void AddClient(string name, int age, string passportnumber)
         {
@@ -68,7 +76,7 @@ namespace BankSystem
             }
         }
         
-        //Добавление нового клиента в файл
+        //Добавление одного нового клиента в файл
         public void AddClientToFile(Client client, List<Account> listOfAccounts)
         {
             Dictionary<Client, List<Account>> dictOfClientsFromFile = ReadClientsFromFile();
@@ -175,11 +183,22 @@ namespace BankSystem
         //Запись словаря dictOfClients в текстовый файл
         public void WriteClientsToFile()
         {
+            Dictionary<Client, List<Account>> dictOfClientsfromFile = ReadClientsFromFile();
+               
             if (!MainDirectoryInfo.Exists)
             {
                 MainDirectoryInfo.Create();
             }
-            
+            //Запись словаря по одному клиенту
+            foreach (var item in dictOfClients)
+            {
+                if (!dictOfClientsfromFile.ContainsKey(item.Key))
+                {
+                    AddClientToFile(item.Key, item.Value);
+                }
+            }
+            //Запись всего словаря целиком без проверки
+            /*
             using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Append))
             {
                 string fieldSeparator = " ";    //разделитель полей
@@ -204,7 +223,7 @@ namespace BankSystem
                 byte[] clientArray = System.Text.Encoding.Default.GetBytes(clientString);
                 fileStream.Write(clientArray,0,clientArray.Length);
             }
-            
+            */
         }
         //чтение из файла в словарь dictOfClientsFromFile
         public static Dictionary<Client, List<Account>> ReadClientsFromFile()
