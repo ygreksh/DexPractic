@@ -47,6 +47,7 @@ namespace BankSystem
         //Добавление нового клиента в словарь
         public void AddClient(string name, int age, string passportnumber)
         {
+
             try
             {
                 Client client = new Client() { Name = name, Age = age, PassportNumber = passportnumber };
@@ -54,7 +55,7 @@ namespace BankSystem
                 {
                     throw new WrongAgeException("Недопустимый возраст клиента: возраст меньше 18!");
                 }
-                else if (dictOfClients.ContainsKey(client) == false)
+                else if (!dictOfClients.ContainsKey(client))
                 {
                     List<Account> listOfAccounts = new List<Account>();
                     dictOfClients.Add(client, listOfAccounts);  //добавление в словарь
@@ -70,17 +71,21 @@ namespace BankSystem
         //Добавление нового клиента в файл
         public void AddClientToFile(Client client, List<Account> listOfAccounts)
         {
-            if (!MainDirectoryInfo.Exists)
+            Dictionary<Client, List<Account>> dictOfClientsFromFile = ReadClientsFromFile();
+            //если такого клиента нет в файле - добавляется
+            if (!dictOfClientsFromFile.ContainsKey(client))
             {
-                MainDirectoryInfo.Create();
-            }
+                if (!MainDirectoryInfo.Exists)
+                {
+                    MainDirectoryInfo.Create();
+                }
             
-            using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Append))
-            {
-                string fieldSeparator = " ";    //разделитель полей
-                string accountSeparator = ",";  //разделитель информации о клиенте и счетов
-                string clientSeparator = "\n";  //разделитель клиентов
-                string clientString = "";
+                using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Append))
+                {
+                    string fieldSeparator = " ";    //разделитель полей
+                    string accountSeparator = ",";  //разделитель информации о клиенте и счетов
+                    string clientSeparator = "\n";  //разделитель клиентов
+                    string clientString = "";
                 
                     clientString += client.PassportNumber +  fieldSeparator +
                                     client.Name +  fieldSeparator +
@@ -95,9 +100,11 @@ namespace BankSystem
                     clientString += accountString;
                     clientString += clientSeparator;
                 
-                byte[] clientArray = System.Text.Encoding.Default.GetBytes(clientString);
-                fileStream.Write(clientArray,0,clientArray.Length);
+                    byte[] clientArray = System.Text.Encoding.Default.GetBytes(clientString);
+                    fileStream.Write(clientArray,0,clientArray.Length);
+                }
             }
+            
         }
         
         //Добавление нового счета Account пользователю в словаре и файле
