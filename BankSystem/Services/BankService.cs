@@ -4,18 +4,22 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Remoting.Contexts;
 using BankSystem.Exceptions;
+using Newtonsoft.Json;
 
 namespace BankSystem
 {
     public class BankService
     {
-        //основной словарь клиентов
-        public Dictionary<Client, List<Account>> dictOfClients = new Dictionary<Client, List<Account>>();
+        public List<Client> listOfClients = new List<Client>();         //клиенты
+        public List<Employee> ListOfEmployees = new List<Employee>();   //сотрудники
+        public Dictionary<string, List<Account>> dictOfAccounts = new Dictionary<string, List<Account>>();  //словарь пасспорт - список счетов 
         
 
         public static string MainPath = Path.Combine("TestFiles");
         public DirectoryInfo MainDirectoryInfo = new DirectoryInfo(MainPath);
-        public static string ClientsfileName = "clients.txt";
+        public static string ClientsfileName = "clients.txt";       //хранит список клиентов
+        public static string EmployeesfileName = "employees.txt";       //хранит список сотрудников
+        public static string AccountsFileName = "accounts.txt";     //хранит словарь счетов у клиентов
         public Func<double, Currency, Currency, double> _transfer;
 
         public void RegisterTransfer(Func<double, Currency, Currency, double> transfer)
@@ -31,27 +35,6 @@ namespace BankSystem
             return listOfPersons.Find(x => x.Equals(person));
         }
         
-        //поиск в файле
-        public static Person FindPersonInFile<T>(string PassportNumber) where T: Person
-        {
-            Dictionary<Client, List<Account>> dictOfPersons = ReadClientsFromFile();
-            List<Person> listOfPersons = null;
-            //из словаря в список
-            foreach (var item in dictOfPersons)
-            {
-                listOfPersons.Add(item.Key);
-            }
-            return FindPerson(PassportNumber, listOfPersons);
-        }
-
-        public void AddClient(Client client)
-        {
-            if (!dictOfClients.ContainsKey(client))
-            {
-                List<Account> listOfAccounts = new List<Account>();
-                dictOfClients.Add(client, listOfAccounts);  //добавление в словарь
-            }
-        }
         //Добавление нового клиента в словарь
         public void AddClient(string name, int age, string passportnumber)
         {
@@ -63,11 +46,11 @@ namespace BankSystem
                 {
                     throw new WrongAgeException("Недопустимый возраст клиента: возраст меньше 18!");
                 }
-                else if (!dictOfClients.ContainsKey(client))
+                else if (!dictOfAccounts.ContainsKey(passportnumber))
                 {
                     List<Account> listOfAccounts = new List<Account>();
-                    dictOfClients.Add(client, listOfAccounts);  //добавление в словарь
-                    AddClientToFile(client, listOfAccounts);    //добавление в файл
+                    listOfClients.Add(client);  //добавление в словарь
+                    dictOfAccounts.Add(passportnumber,listOfAccounts);
                 }
             }
             catch (WrongAgeException e)
@@ -76,10 +59,7 @@ namespace BankSystem
             }
         }
         
-        /*  Добавление одного нового клиента в файл
-         *   формат записи в файле
-         *   PassportNumber Name Age,currency value,currency value, ... \n 
-        */
+        /*
         public void AddClientToFile(Client client, List<Account> listOfAccounts)
         {
             Dictionary<Client, List<Account>> dictOfClientsFromFile = ReadClientsFromFile();
@@ -117,22 +97,21 @@ namespace BankSystem
             }
             
         }
-        
+        */
         //Добавление нового счета Account пользователю в словаре и файле
         public void AddClientAccount(Account account, Client client)
         {
             //если такого клиента нет в словаре - создаем нового клиента
-            if (dictOfClients.ContainsKey(client) == false)
+            if (dictOfAccounts.ContainsKey(client.PassportNumber) == false)
             {
                 List<Account> listOfAccounts = new List<Account>();
                 listOfAccounts.Add(account);
-                dictOfClients.Add(client, listOfAccounts);  //добавление в словарь
-                AddClientToFile(client, listOfAccounts);
+                dictOfAccounts.Add(client.PassportNumber, listOfAccounts);  //добавление в словарь
             }
             //если искомый уже клиент есть, добавляется ещё один Account в listOfAccounts
             else
             {
-                dictOfClients[client].Add(account);
+                dictOfAccounts[client.PassportNumber].Add(account);
             }
         }
         //Переод денег между счетами без комиссии
@@ -186,107 +165,43 @@ namespace BankSystem
         //Запись словаря dictOfClients в текстовый файл
         public void WriteClientsToFile()
         {
-            Dictionary<Client, List<Account>> dictOfClientsfromFile = ReadClientsFromFile();
-               
+            
             if (!MainDirectoryInfo.Exists)
             {
                 MainDirectoryInfo.Create();
             }
-            //Запись словаря по одному клиенту
-            foreach (var item in dictOfClients)
-            {
-                if (!dictOfClientsfromFile.ContainsKey(item.Key))
-                {
-                    AddClientToFile(item.Key, item.Value);
-                }
-            }
-            //Запись всего словаря целиком без проверки
-            /*
+
+            var jsonClients = JsonConvert.SerializeObject(listOfClients);
+            byte[] arrayClients = System.Text.Encoding.Default.GetBytes(jsonClients);
+
             using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Append))
             {
-                string fieldSeparator = " ";    //разделитель полей
-                string accountSeparator = ",";  //разделитель информации о клиенте и счетов
-                string clientSeparator = "\n";  //разделитель клиентов
-                string clientString = "";
-                foreach (var item in dictOfClients)
-                {
-                    clientString += item.Key.PassportNumber +  fieldSeparator +
-                                    item.Key.Name +  fieldSeparator +
-                                    item.Key.Age.ToString();
-                    string accountString = "";
-                    foreach (var account in item.Value)
-                    {
-                        accountString += accountSeparator + 
-                                         account.currency + fieldSeparator + 
-                                         account.value.ToString();
-                    }
-                    clientString += accountString;
-                    clientString += clientSeparator;
-                }
-                byte[] clientArray = System.Text.Encoding.Default.GetBytes(clientString);
-                fileStream.Write(clientArray,0,clientArray.Length);
+                fileStream.Write(arrayClients,0,arrayClients.Length);
             }
-            */
-        }
-        //чтение из файла в словарь dictOfClientsFromFile
-        public static Dictionary<Client, List<Account>> ReadClientsFromFile()
-        {
-            //словарь клиентов который будет прочитан из файла
-            Dictionary<Client, List<Account>> dictOfClientsfromFile = new Dictionary<Client, List<Account>>();
-            char fieldSeparator = ' ';      //разделитель полей
-            char accountSeparator = ',';    //разделитель информации о клиенте и счетов
-            char clientSeparator = '\n';    //разделитель клиентов
+            var jsonAccounts = JsonConvert.SerializeObject(dictOfAccounts);
+            byte[] arrayAccounts = System.Text.Encoding.Default.GetBytes(jsonAccounts);
 
+            using (FileStream fileStream = new FileStream($"{MainPath}\\{AccountsFileName}", FileMode.Append))
+            {
+                fileStream.Write(arrayAccounts,0,arrayClients.Length);
+            }
+            
+        }
+        //чтение из файла в словарь dictOfAccountsFromFile
+        public static Dictionary<string, List<Account>> ReadClientsFromFile()
+        {
+            //словарь клиентов и счетов который будет прочитан из файла
+            Dictionary<string, List<Account>> dictOfAccountsfromFile = null;
+            List<Client> clients = null;
+            
             using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Open))
             {
                 byte[] filearray = new byte[fileStream.Length];
                 fileStream.Read(filearray, 0, filearray.Length);
                 string fileString = System.Text.Encoding.Default.GetString(filearray);
-                
+                dictOfAccountsfromFile = JsonConvert.DeserializeObject<Dictionary<string, List<Account>>>(fileString);
                 //парсинг клиентов и счетов из строки
-                //строки с клиентами
-                string[] arrayStringClients = fileString.Split(clientSeparator);
-                foreach (var stringClient in arrayStringClients)
-                {
-                    if (stringClient != "")
-                    {
-                        //строки [0] - клиент, [1] и далее это счета
-                        string[] arrayStringAccounts = stringClient.Split(accountSeparator);
-                        string[] arrayclient = arrayStringAccounts[0].Split(fieldSeparator);
-                        //парсинг информации о клиенте
-                        string clientPassportnumber = arrayclient[0];
-                        string clientName = arrayclient[1];
-                        string clientAge = arrayclient[2];
-                        Client client = new Client() {Name = clientName, Age = Int32.Parse(clientAge), PassportNumber = clientPassportnumber};
-                        //парсинг счетов
-                        List<Account> listOfAccounts = new List<Account>();
-                        for (int i = 1; i < arrayStringAccounts.Length; i++)
-                        {
-                            string[] strAccount = arrayStringAccounts[i].Split(fieldSeparator);
-                            string strCurrencyName = strAccount[0];
-                            string strValue = strAccount[1];
-                            Currency currency = null;
-                            switch (strCurrencyName)
-                            {
-                                case "BankSystem.Dollar": currency = new Dollar() { CurrencyName = "Dollar", rate = 1 }; break;
-                                case "BankSystem.Ruble": currency = new Ruble() { CurrencyName = "Ruble", rate = 77 }; break;
-                                case "BankSystem.Leu": currency = new Leu() { CurrencyName = "Leu", rate = 12 }; break;
-                                case "BankSystem.Hryvnia": currency = new Hryvnia() { CurrencyName = "Hryvnia", rate = 27 }; break;
-                                default: break;
-                            }
-                            listOfAccounts.Add(new Account(){currency = currency, value = Double.Parse(strValue)});
-                        }
-
-                        if (!dictOfClientsfromFile.ContainsKey(client))
-                        {
-                            dictOfClientsfromFile.Add(client,listOfAccounts);
-                            
-                        }
-                    }
-                    
-                    
-                }
-                return dictOfClientsfromFile;
+                return dictOfAccountsfromFile;
             }
         }
     }
