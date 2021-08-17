@@ -173,28 +173,43 @@ namespace BankSystem
 
             var jsonClients = JsonConvert.SerializeObject(listOfClients);
             byte[] arrayClients = System.Text.Encoding.Default.GetBytes(jsonClients);
-
+            //запись списка клиентов в файл
             using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Append))
             {
                 fileStream.Write(arrayClients,0,arrayClients.Length);
             }
+            /*
             var jsonAccounts = JsonConvert.SerializeObject(dictOfAccounts);
             byte[] arrayAccounts = System.Text.Encoding.Default.GetBytes(jsonAccounts);
-
+            //Запись счетов в другой файл
             using (FileStream fileStream = new FileStream($"{MainPath}\\{AccountsFileName}", FileMode.Append))
             {
-                fileStream.Write(arrayAccounts,0,arrayClients.Length);
+                fileStream.Write(arrayAccounts,0,arrayAccounts.Length);
             }
+            */
             
         }
+
+        public static List<Client> ReadClientsFromFile()
+        {
+            List<Client> clients = null;
+            using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Open))
+            {
+                byte[] filearray = new byte[fileStream.Length];
+                fileStream.Read(filearray, 0, filearray.Length);
+                string fileString = System.Text.Encoding.Default.GetString(filearray);
+                clients = JsonConvert.DeserializeObject<List<Client>>(fileString);
+                //парсинг клиентов и счетов из строки
+                return clients;
+            }
+        }
         //чтение из файла в словарь dictOfAccountsFromFile
-        public static Dictionary<string, List<Account>> ReadClientsFromFile()
+        public static Dictionary<string, List<Account>> ReadAccountsFromFile()
         {
             //словарь клиентов и счетов который будет прочитан из файла
             Dictionary<string, List<Account>> dictOfAccountsfromFile = null;
-            List<Client> clients = null;
             
-            using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Open))
+            using (FileStream fileStream = new FileStream($"{MainPath}\\{AccountsFileName}", FileMode.Open))
             {
                 byte[] filearray = new byte[fileStream.Length];
                 fileStream.Read(filearray, 0, filearray.Length);
