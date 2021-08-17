@@ -59,45 +59,7 @@ namespace BankSystem
             }
         }
         
-        /*
-        public void AddClientToFile(Client client, List<Account> listOfAccounts)
-        {
-            Dictionary<Client, List<Account>> dictOfClientsFromFile = ReadClientsFromFile();
-            //если такого клиента нет в файле - добавляется
-            if (!dictOfClientsFromFile.ContainsKey(client))
-            {
-                if (!MainDirectoryInfo.Exists)
-                {
-                    MainDirectoryInfo.Create();
-                }
-            
-                using (FileStream fileStream = new FileStream($"{MainPath}\\{ClientsfileName}", FileMode.Append))
-                {
-                    string fieldSeparator = " ";    //разделитель полей
-                    string accountSeparator = ",";  //разделитель информации о клиенте и счетов
-                    string clientSeparator = "\n";  //разделитель клиентов
-                    string clientString = "";
-                
-                    clientString += client.PassportNumber +  fieldSeparator +
-                                    client.Name +  fieldSeparator +
-                                    client.Age.ToString();
-                    string accountString = "";
-                    foreach (var account in listOfAccounts)
-                    {
-                        accountString += accountSeparator + 
-                                         account.currency + fieldSeparator + 
-                                         account.value.ToString();
-                    }
-                    clientString += accountString;
-                    clientString += clientSeparator;
-                
-                    byte[] clientArray = System.Text.Encoding.Default.GetBytes(clientString);
-                    fileStream.Write(clientArray,0,clientArray.Length);
-                }
-            }
-            
-        }
-        */
+        
         //Добавление нового счета Account пользователю в словаре и файле
         public void AddClientAccount(Account account, Client client)
         {

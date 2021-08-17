@@ -37,11 +37,13 @@ namespace BankSystem
             bankService.AddClientAccount(petrovaccount3, Petrov);
             bankService.AddClientAccount(sidorovaccount1, Sidorov);
             
-            //bankService.WriteClientsToFile();
-            //bankService.WriteAccountsToFile();
+            bankService.WriteClientsToFile();
+            bankService.WriteAccountsToFile();
             
-            var listOfClientsFromFile = BankService.ReadClientsFromFile();
-            var dictOfAccountsFromFile = BankService.ReadAccountsFromFile();
+            List<Client> listOfClientsFromFile = null;
+            listOfClientsFromFile = BankService.ReadClientsFromFile();
+            Dictionary<string, List<Account>> dictOfAccountsFromFile = null;
+            dictOfAccountsFromFile = BankService.ReadAccountsFromFile();
             
             foreach (var client in listOfClientsFromFile)
             {
@@ -53,7 +55,7 @@ namespace BankSystem
                 Console.WriteLine($"{item.Key} :");
                 foreach (var account in item.Value)
                 {
-                    Console.WriteLine($"            - {account.currency} {account.value}");
+                    Console.WriteLine($"          - {account.currency} {account.value}");
                 }
             }
 
