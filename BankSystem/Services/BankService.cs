@@ -178,17 +178,18 @@ namespace BankSystem
             {
                 fileStream.Write(arrayClients,0,arrayClients.Length);
             }
-            /*
+        }
+
+        public void WriteAccountsToFile()
+        {
             var jsonAccounts = JsonConvert.SerializeObject(dictOfAccounts);
             byte[] arrayAccounts = System.Text.Encoding.Default.GetBytes(jsonAccounts);
-            //Запись счетов в другой файл
             using (FileStream fileStream = new FileStream($"{MainPath}\\{AccountsFileName}", FileMode.Append))
             {
                 fileStream.Write(arrayAccounts,0,arrayAccounts.Length);
             }
-            */
-            
         }
+
 
         public static List<Client> ReadClientsFromFile()
         {
@@ -215,7 +216,6 @@ namespace BankSystem
                 fileStream.Read(filearray, 0, filearray.Length);
                 string fileString = System.Text.Encoding.Default.GetString(filearray);
                 dictOfAccountsfromFile = JsonConvert.DeserializeObject<Dictionary<string, List<Account>>>(fileString);
-                //парсинг клиентов и счетов из строки
                 return dictOfAccountsfromFile;
             }
         }
