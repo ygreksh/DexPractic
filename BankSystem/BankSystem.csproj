@@ -64,6 +64,7 @@
         <Compile Include="Services\Exchange.cs" />
         <Compile Include="Services\ExtractData.cs" />
         <Compile Include="Services\IExchange.cs" />
+        <Compile Include="Services\TestDataService.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />
