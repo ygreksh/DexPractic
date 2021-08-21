@@ -30,35 +30,10 @@ namespace BankSystem
             Account petrovaccount3 = new Account() { currency = hryvnia, value = 20000 };
             Account sidorovaccount1 = new Account() { currency = ruble, value = 3000 }; 
             
-            bankService.AddClientAccount(ivanovaccount1, Ivanov);
-            bankService.AddClientAccount(ivanovaccount2, Ivanov);
-            bankService.AddClientAccount(petrovaccount1, Petrov);
-            bankService.AddClientAccount(petrovaccount2, Petrov);
-            bankService.AddClientAccount(petrovaccount3, Petrov);
-            bankService.AddClientAccount(sidorovaccount1, Sidorov);
-            
-            bankService.WriteClientsToFile();
-            bankService.WriteAccountsToFile();
-            
-            List<Client> listOfClientsFromFile = null;
-            listOfClientsFromFile = BankService.ReadClientsFromFile();
-            Dictionary<string, List<Account>> dictOfAccountsFromFile = null;
-            dictOfAccountsFromFile = BankService.ReadAccountsFromFile();
-            
-            foreach (var client in listOfClientsFromFile)
-            {
-                Console.WriteLine($"{client.PassportNumber} {client.Name} {client.Age}");
-            }
-
-            foreach (var item in dictOfAccountsFromFile)
-            {
-                Console.WriteLine($"{item.Key} :");
-                foreach (var account in item.Value)
-                {
-                    Console.WriteLine($"          - {account.currency} {account.value}");
-                }
-            }
-
+            ExtractData.GetData(Ivanov);
+            ExtractData.GetData(dollar);
+            ExtractData.GetData(ivanovaccount1);
+            //ExtractData.GetData(bankService.listOfClients);
         }
         
         
