@@ -6,7 +6,7 @@ namespace BankSystem
     {
         public static Client TestClientGenerate()
         {
-            var testClients = new Faker<Client>()
+            var testClients = new Faker<Client>("ru")
                 .RuleFor(c => c.Name, f => f.Name.FullName())
                 .RuleFor(c => c.Age, f => f.Random.Number(18, 100))
                 .RuleFor(c => c.PassportNumber,
@@ -16,7 +16,7 @@ namespace BankSystem
         }
         public static Employee TestEmployeeGenerate()
         {
-            var testEmployees = new Faker<Employee>()
+            var testEmployees = new Faker<Employee>("ru")
                 .RuleFor(e => e.Name, f => f.Name.FullName())
                 .RuleFor(e => e.Age, f => f.Random.Number(18, 100))
                 .RuleFor(e => e.PassportNumber,
