@@ -1,25 +1,39 @@
 using System;
+using System.IO;
 
 namespace BankSystem
 {
     public class ExtractData
     {
-        public static void GetData<T>(T obj)
+        public static void GetData<T>(T obj, string filename)
         {
+            string objDataPath = Path.Combine("ObjData");
             var objType = obj.GetType();
-            Console.WriteLine(objType.FullName);
             var objProperties = objType.GetProperties();
             var objMethods = objType.GetMethods();
-            Console.WriteLine("Properties:");
-            foreach (var property in objProperties)
+            var directoryInfo = new DirectoryInfo(objDataPath);
+            if (!directoryInfo.Exists)
             {
-                Console.WriteLine($"    {property.PropertyType} {property.Name} = {property.GetValue(obj)}");
+                directoryInfo.Create();
             }
-            Console.WriteLine("Methods:");
-            foreach (var method in objMethods)
+
+            using (FileStream fs = new FileStream($"{objDataPath}\\{filename}",FileMode.Create))
             {
-                Console.WriteLine($"    {method.MemberType} {method.ReturnType} {method.Name}()");
+                string objdata = "";
+                objdata += objType.FullName + "\n";
+                foreach (var property in objProperties)
+                {
+                    objdata += property.Name + " = " + property.GetValue(obj) + "\n";
+                }
+
+                foreach (var method in objMethods)
+                {
+                    objdata += method.Name + "\n";
+                }
+                byte[] arr = System.Text.Encoding.Default.GetBytes(objdata);
+                fs.Write(arr, 0, arr.Length);
             }
+            
         }
     }
 }
