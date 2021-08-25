@@ -29,7 +29,7 @@ namespace BankSystem
         
 
         //обобщенный метод. работает только с экземплярами и наследниками Person
-        public static Person FindPerson<T>(string PassportNumber, List<T> listOfPersons) where T: Person
+        public static T FindPerson<T>(string PassportNumber, List<T> listOfPersons) where T: Person
         {
             Person person = new Person(){PassportNumber = PassportNumber};
             return listOfPersons.Find(x => x.Equals(person));

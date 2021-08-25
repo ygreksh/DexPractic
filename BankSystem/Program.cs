@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BankSystem.Exceptions;
-using  Newtonsoft.Json;
+using Newtonsoft.Json;
 
 namespace BankSystem
 {
