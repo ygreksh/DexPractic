@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace BankSystem
 {
     public class Currency
     {
+        [JsonProperty("name")]
         public string currencyName { get; set; }
+        [JsonProperty("rate")]
         public double rate { get; set; }
         public override bool Equals(object obj)
         {

@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankSystem", "BankSystem\BankSystem.csproj", "{B0656FB9-9B62-4207-B878-9C2F1F569ED9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankSystem.Test", "BankSystem.Test\BankSystem.Test.csproj", "{EA563183-F41D-4CFB-8DD8-DD23FC04115A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankSystem.Tests", "BankSystem.Tests\BankSystem.Tests.csproj", "{EA563183-F41D-4CFB-8DD8-DD23FC04115A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

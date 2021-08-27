@@ -2,7 +2,7 @@ using Xunit;
 
 namespace BankSystem.Test
 {
-    public class BankServiceTest
+    public class BankServiceTests
     {
         [Fact]
         public void AddClient_FindClient_Ivanov()
