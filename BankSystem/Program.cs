@@ -12,15 +12,15 @@ namespace BankSystem
         {
             BankService bankService = new BankService();
             
-            Dollar dollar = new Dollar() { CurrencyName = "USD" };
-            Ruble ruble = new Ruble() { CurrencyName = "RUB" };
-            Leu leu = new Leu() { CurrencyName = "MDL" };
-            Hryvnia hryvnia = new Hryvnia() { CurrencyName = "UAH" };
+            Dollar dollar = new Dollar() { currencyName = "USD" };
+            Ruble ruble = new Ruble() { currencyName = "RUB" };
+            Leu leu = new Leu() { currencyName = "MDL" };
+            Hryvnia hryvnia = new Hryvnia() { currencyName = "UAH" };
             
-            bankService.dictOfCurrency.Add(dollar.CurrencyName,dollar);
-            bankService.dictOfCurrency.Add(ruble.CurrencyName,ruble);
-            bankService.dictOfCurrency.Add(leu.CurrencyName,leu);
-            bankService.dictOfCurrency.Add(hryvnia.CurrencyName,hryvnia);
+            bankService.dictOfCurrency.Add(dollar.currencyName,dollar);
+            bankService.dictOfCurrency.Add(ruble.currencyName,ruble);
+            bankService.dictOfCurrency.Add(leu.currencyName,leu);
+            bankService.dictOfCurrency.Add(hryvnia.currencyName,hryvnia);
             
             CurrencyService currencyService = new CurrencyService();
             CurrencyResponse currencyResponse;
@@ -33,7 +33,7 @@ namespace BankSystem
             //проверка: вывод значений Rate из словаря dictOfCurrency
             foreach (var item in bankService.dictOfCurrency)
             {
-                Console.WriteLine($"{item.Key} = {item.Value.rate}");
+                Console.WriteLine($"{item.Value.currencyName} = {item.Value.rate}");
             }
         }
     }

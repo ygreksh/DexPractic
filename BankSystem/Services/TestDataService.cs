@@ -27,10 +27,10 @@ namespace BankSystem
         }
         public static Account TestAccountGenerate()
         {
-            Dollar dollar = new Dollar() { CurrencyName = "dollar", rate = 1 };
-            Ruble ruble = new Ruble() { CurrencyName = "ruble", rate = 77 };
-            Leu leu = new Leu() { CurrencyName = "leu", rate = 18 };
-            Hryvnia hryvnia = new Hryvnia() { CurrencyName = "hryvnia", rate = 27 }; 
+            Dollar dollar = new Dollar() { currencyName = "dollar", rate = 1 };
+            Ruble ruble = new Ruble() { currencyName = "ruble", rate = 77 };
+            Leu leu = new Leu() { currencyName = "leu", rate = 18 };
+            Hryvnia hryvnia = new Hryvnia() { currencyName = "hryvnia", rate = 27 }; 
             var testAccounts = new Faker<Account>()
                 .RuleFor(a => a.value, f => f.Random.Double(0.0, 1000000))
                 .RuleFor(a => a.currency, f => f.PickRandom<Currency>(new List<Currency>(){dollar,leu,ruble,hryvnia}));

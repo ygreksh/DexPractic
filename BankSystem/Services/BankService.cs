@@ -102,7 +102,7 @@ namespace BankSystem
                                             Func<double, Currency, Currency, double> transfermoney)
         {
             double tax = 1; //размер комиссии
-            Dollar dollar = new Dollar() { CurrencyName = "Dollar", rate = 1 }; //валюта комиссии 
+            Dollar dollar = new Dollar() { currencyName = "Dollar", rate = 1 }; //валюта комиссии 
             try
             {
                 if ((Sum + transfermoney.Invoke(tax, dollar, donorAccount.currency))  > donorAccount.value )

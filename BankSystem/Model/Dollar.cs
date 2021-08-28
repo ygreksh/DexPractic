@@ -6,6 +6,6 @@ namespace BankSystem
 {
     public class Dollar : Currency
     {
-        public string CurrencyName { get; set; }
+        //public string CurrencyName { get; set; }
     }
 }

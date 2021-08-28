@@ -6,6 +6,6 @@ namespace BankSystem
 {
     public class Leu : Currency
     {
-        public string CurrencyName { get; set; }
+        //public string CurrencyName { get; set; }
     }
 }
