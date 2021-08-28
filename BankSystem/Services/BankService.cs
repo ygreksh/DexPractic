@@ -10,8 +10,10 @@ namespace BankSystem
     {
         public List<Client> listOfClients = new List<Client>();         //клиенты
         public List<Employee> ListOfEmployees = new List<Employee>();   //сотрудники
-        public Dictionary<string, List<Account>> dictOfAccounts = new Dictionary<string, List<Account>>();  //словарь пасспорт - список счетов 
+        public Dictionary<string, List<Account>> dictOfAccounts = new Dictionary<string, List<Account>>();  //словарь пасспорт - список счетов
         
+        //Словарь соответствия кода валюты и класса валюты USD - Dollar
+        public Dictionary<string, Currency> dictOfCurrency = new Dictionary<string, Currency>();
 
         public static string MainPath = Path.Combine("TestFiles");
         public DirectoryInfo MainDirectoryInfo = new DirectoryInfo(MainPath);
@@ -58,7 +60,7 @@ namespace BankSystem
         }
         
         
-        //Добавление нового счета Account пользователю в словаре и файле
+        //Добавление нового счета Account пользователю в словаре
         public void AddClientAccount(Account account, Client client)
         {
             //если такого клиента нет в словаре - создаем нового клиента
@@ -139,7 +141,8 @@ namespace BankSystem
                 fileStream.Write(arrayClients,0,arrayClients.Length);
             }
         }
-
+        
+        //запись счетов в файл
         public void WriteAccountsToFile()
         {
             var jsonAccounts = JsonConvert.SerializeObject(dictOfAccounts);
@@ -150,7 +153,7 @@ namespace BankSystem
             }
         }
 
-
+        //чтение клиентов из файла в список 
         public static List<Client> ReadClientsFromFile()
         {
             List<Client> clients = null;
@@ -164,7 +167,7 @@ namespace BankSystem
                 return clients;
             }
         }
-        //чтение из файла в словарь dictOfAccountsFromFile
+        //чтение счетов из файла в словарь dictOfAccountsFromFile
         public static Dictionary<string, List<Account>> ReadAccountsFromFile()
         {
             //словарь клиентов и счетов который будет прочитан из файла

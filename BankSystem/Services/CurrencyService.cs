@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -7,9 +8,10 @@ namespace BankSystem
 {
     public class CurrencyService
     {
-        public async Task<CurrencyResponse> GetExchangeRate()
+        //получение значений rate из внешнего сервиса
+        public async Task<CurrencyResponse> GetExchangeRates()
         {
-            //https://openexchangerates.org
+            //Сервис https://openexchangerates.org
             //base currency - USD
             string _token = "6f4e6254cce34c899e27f556ba3bb5a3";
             
@@ -23,6 +25,18 @@ namespace BankSystem
                 currencyResponse = JsonConvert.DeserializeObject<CurrencyResponse>(serializedMessage);
             }
             return currencyResponse;
-        } 
+        }
+
+        //присвоение значений Rate в словарь валюты
+        public void AssigningCurrenryRates(CurrencyResponse currencyResponse, Dictionary<string, Currency> dictOfCurrency)
+        {
+            foreach (var item in currencyResponse.Rates)
+            {
+                if (dictOfCurrency.ContainsKey(item.Key))
+                {
+                    dictOfCurrency[item.Key].rate = item.Value;
+                }
+            }
+        }
     }
 }

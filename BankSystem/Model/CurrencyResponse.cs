@@ -9,7 +9,6 @@ namespace BankSystem
         public string License { get; set; }
         public int TimeStamp { get; set; }
         public string Base { get; set; }
-        //public IEnumerable<Currency> Rates { get; set; }
         public Dictionary<string, double> Rates { get; set; }
     }
 }
