@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using BankSystem.Exceptions;
 using Newtonsoft.Json;
@@ -10,31 +11,34 @@ namespace BankSystem
     {
         public static async Task Main(string[] args)
         {
+            var clientlocker = new object();
             BankService bankService = new BankService();
-            
-            Dollar dollar = new Dollar() { currencyName = "USD" };
-            Ruble ruble = new Ruble() { currencyName = "RUB" };
-            Leu leu = new Leu() { currencyName = "MDL" };
-            Hryvnia hryvnia = new Hryvnia() { currencyName = "UAH" };
-            
-            bankService.dictOfCurrency.Add(dollar.currencyName,dollar);
-            bankService.dictOfCurrency.Add(ruble.currencyName,ruble);
-            bankService.dictOfCurrency.Add(leu.currencyName,leu);
-            bankService.dictOfCurrency.Add(hryvnia.currencyName,hryvnia);
-            
-            CurrencyService currencyService = new CurrencyService();
-            CurrencyResponse currencyResponse;
-            //получение информации о валюте 
-            currencyResponse = await currencyService.GetExchangeRates();
-            //Console.WriteLine(currencyResponse);
-            //присвоение значений Rate для валюты в bankservice
-            currencyService.AssigningCurrenryRates(currencyResponse, bankService.dictOfCurrency);
-            
-            //проверка: вывод значений Rate из словаря dictOfCurrency
-            foreach (var item in bankService.dictOfCurrency)
+            Client client;
+            ThreadPool.QueueUserWorkItem(_ =>
             {
-                Console.WriteLine($"{item.Value.currencyName} = {item.Value.rate}");
-            }
+                for (int i = 0; i < 10; i++)
+                {
+                    client = TestDataService.TestClientGenerate();
+                    bankService.AddClient(client.Name,client.Age,client.PassportNumber);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"Добавленновый клиент: {client.PassportNumber}, {client.Name}, {client.Age}");
+                    Console.ResetColor();
+                    Thread.Sleep(1000);
+                }
+            });
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                while (true)
+                {
+                    lock (clientlocker)
+                    {
+                        bankService.PrintClients();
+                    }
+                    Thread.Sleep(1000);
+                }
+                
+            });
+            Console.ReadLine();
         }
     }
 }

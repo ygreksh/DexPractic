@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using BankSystem.Exceptions;
 using Newtonsoft.Json;
 
@@ -8,6 +9,7 @@ namespace BankSystem
 {
     public class BankService
     {
+        private object locker = new object();
         public List<Client> listOfClients = new List<Client>();         //клиенты
         public List<Employee> ListOfEmployees = new List<Employee>();   //сотрудники
         public Dictionary<string, List<Account>> dictOfAccounts = new Dictionary<string, List<Account>>();  //словарь пасспорт - список счетов
@@ -180,6 +182,15 @@ namespace BankSystem
                 string fileString = System.Text.Encoding.Default.GetString(filearray);
                 dictOfAccountsfromFile = JsonConvert.DeserializeObject<Dictionary<string, List<Account>>>(fileString);
                 return dictOfAccountsfromFile;
+            }
+        }
+
+        public void PrintClients()
+        {
+            Console.WriteLine($"В банке {listOfClients.Count} клиентов:");
+            foreach (var client in listOfClients)
+            {
+                Console.WriteLine($"{client.PassportNumber}, {client.Name}, {client.Age}");
             }
         }
     }
