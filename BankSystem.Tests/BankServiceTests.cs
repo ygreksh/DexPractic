@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Xunit;
 
 namespace BankSystem.Tests
@@ -21,7 +22,7 @@ namespace BankSystem.Tests
         }
 
         [Fact]
-        public void TransferMoney_Dollar5_to_Dollar_10_Eq_Dollar15()
+        public void TransferMoney_Dollar5_To_Dollar10_Eq_Dollar15()
         {
             //Arrange
             Account donorAccount = new Account() { currency = new Dollar() { currencyName = "USD", rate = 1}, value = 5 };
@@ -31,11 +32,11 @@ namespace BankSystem.Tests
             //Act
             bankService.TransferMoney(5,donorAccount,recipientAccount, transfermoney);
             //Assert
-            Assert.Equal(donorAccount.value,0);
-            Assert.Equal(recipientAccount.value,15);
+            Assert.Equal(0,donorAccount.value);
+            Assert.Equal(15,recipientAccount.value);
         }
         [Fact]
-        public void TransferMoney_Dollar1_to_Ruble_10_Eq_Ruble87()
+        public void TransferMoney_Dollar1_To_Ruble10_Eq_Ruble87()
         {
             //Arrange
             Account donorAccount = new Account() { currency = new Dollar() { currencyName = "USD", rate = 1}, value = 10 };
@@ -45,8 +46,42 @@ namespace BankSystem.Tests
             //Act
             bankService.TransferMoney(1,donorAccount,recipientAccount, transfermoney);
             //Assert
-            Assert.Equal(donorAccount.value,9);
-            Assert.Equal(recipientAccount.value,87);
+            Assert.Equal(9,donorAccount.value);
+            Assert.Equal(87,recipientAccount.value);
+        }
+
+        [Fact]
+        public void TransferMoneyThreads_Dollar2_and_Dollar3_To_Dollar10_Eq_Dollar15()
+        {
+            //Arrange
+            Account donorAccount1 = new Account() { currency = new Dollar() { currencyName = "USD", rate = 1}, value = 10 };
+            Account donorAccount2 = new Account() { currency = new Dollar() { currencyName = "USD", rate = 1}, value = 10 };
+            Account recipientAccount = new Account() { currency = new Ruble() { currencyName = "RUB", rate = 77}, value = 10 };
+            Func<double, Currency, Currency, double> transfermoney = new  Exchange<Currency>().CurrencyExchange;
+            BankService bankService = new BankService();
+            //Act
+            var locker = new object();
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                lock (locker)
+                {
+                    bankService.TransferMoney(2,donorAccount1,recipientAccount, transfermoney);
+                    //Thread.Sleep(1000);
+                }
+            });
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                lock (locker)
+                {
+                    bankService.TransferMoney(3,donorAccount2,recipientAccount, transfermoney);
+                    //Thread.Sleep(1000);
+                }
+            });
+            Thread.Sleep(1000);
+            //Assert
+            Assert.Equal(8, donorAccount1.value);
+            Assert.Equal(7, donorAccount2.value);
+            Assert.Equal(395,recipientAccount.value);
         }
     }
 }
