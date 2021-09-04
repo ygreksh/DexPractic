@@ -21,7 +21,7 @@ namespace BankSystem
                     client = TestDataService.TestClientGenerate();
                     bankService.AddClient(client.Name,client.Age,client.PassportNumber);
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"Добавленновый клиент: {client.PassportNumber}, {client.Name}, {client.Age}");
+                    Console.WriteLine($"Добавлен новый клиент: {client.PassportNumber}, {client.Name}, {client.Age}");
                     Console.ResetColor();
                     Thread.Sleep(1000);
                 }
