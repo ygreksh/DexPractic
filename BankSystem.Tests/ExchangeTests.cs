@@ -1,8 +1,8 @@
 using Xunit;
 
-namespace BankSystem.Test
+namespace BankSystem.Tests
 {
-    public class ExchangeTest
+    public class ExchangeTests
     {
         [Fact]
         public void CurrencyExchange_1d_to_77r()

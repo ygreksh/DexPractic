@@ -11,6 +11,8 @@ namespace BankSystem
     {
         public static async Task Main(string[] args)
         {
+            // практическое задание 1
+            // добавление клиентов в список и вывод списка одновременно в разных потоках
             var clientlocker = new object();
             BankService bankService = new BankService();
             Client client;
@@ -38,6 +40,9 @@ namespace BankSystem
                 }
                 
             });
+            
+            // практическое задание 2
+            // перевод денег на один счет с других счетов одновременно
             Console.ReadLine();
         }
     }

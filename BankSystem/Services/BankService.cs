@@ -193,5 +193,14 @@ namespace BankSystem
                 Console.WriteLine($"{client.PassportNumber}, {client.Name}, {client.Age}");
             }
         }
+        /*
+        //добавление денег на счет
+        public void AddMoney(double sum, Account account, Client client)
+        {
+            List<Account> list = dictOfAccounts.GetValueOrDefault(client.PassportNumber);
+            Account acc = list.Find(a => a.currency.Equals(account.currency));
+            acc.value += sum;
+        }
+        */
     }
 }

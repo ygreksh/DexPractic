@@ -1,6 +1,7 @@
+using System;
 using Xunit;
 
-namespace BankSystem.Test
+namespace BankSystem.Tests
 {
     public class BankServiceTests
     {
@@ -17,6 +18,19 @@ namespace BankSystem.Test
             //Assert
             Assert.NotNull(client2);
             Assert.Equal(client1,client2);
+        }
+
+        [Fact]
+        public void TransferMoney_Dollar5_to_Dollar_10_Eq_Dollar15()
+        {
+            //Arrange
+            Account donorAccount = new Account() { currency = new Dollar() { currencyName = "USD" }, value = 5 };
+            Account recipientAccount = new Account() { currency = new Dollar() { currencyName = "USD" }, value = 10 };
+            //Func<double, Currency, Currency, double> transfermoney = (sum, fromAccount, toAccount) => {fromAccount.};
+            BankService bankService = new BankService();
+            //Act
+            //bankService.TransferMoney(5,donorAccount,recipientAccount,Func<double, Currency, Currency, double> transfermoney);
+            //Assert
         }
     }
 }
