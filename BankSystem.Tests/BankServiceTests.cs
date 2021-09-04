@@ -66,7 +66,6 @@ namespace BankSystem.Tests
                 lock (locker)
                 {
                     bankService.TransferMoney(2,donorAccount1,recipientAccount, transfermoney);
-                    //Thread.Sleep(1000);
                 }
             });
             ThreadPool.QueueUserWorkItem(_ =>
@@ -74,10 +73,10 @@ namespace BankSystem.Tests
                 lock (locker)
                 {
                     bankService.TransferMoney(3,donorAccount2,recipientAccount, transfermoney);
-                    //Thread.Sleep(1000);
                 }
             });
-            Thread.Sleep(1000);
+            //Thread.Sleep(100);
+            Thread.CurrentThread.Join(100);
             //Assert
             Assert.Equal(8, donorAccount1.value);
             Assert.Equal(7, donorAccount2.value);
